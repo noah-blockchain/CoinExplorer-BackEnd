@@ -11,6 +11,7 @@ require (
 	github.com/centrifugal/centrifuge-go v0.2.3
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.4.0
+	github.com/go-pg/migrations v6.7.3+incompatible
 	github.com/go-pg/pg v8.0.5+incompatible
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect

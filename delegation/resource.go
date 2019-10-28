@@ -10,7 +10,7 @@ import (
 type Resource struct {
 	Coin          string             `json:"coin"`
 	Value         string             `json:"value"`
-	NoahValue      string             `json:"noah_value"`
+	NoahValue     string             `json:"noah_value"`
 	PubKey        string             `json:"pub_key"`
 	ValidatorMeta resource.Interface `json:"validator_meta"`
 }
@@ -22,7 +22,7 @@ func (resource Resource) Transform(model resource.ItemInterface, params ...resou
 		Coin:          stake.Coin.Symbol,
 		PubKey:        stake.Validator.GetPublicKey(),
 		Value:         helpers.QNoahStr2Noah(stake.Value),
-		NoahValue:      helpers.QNoahStr2Noah(stake.NoahValue),
+		NoahValue:     helpers.QNoahStr2Noah(stake.NoahValue),
 		ValidatorMeta: new(validatorMeta.Resource).Transform(*stake.Validator),
 	}
 }

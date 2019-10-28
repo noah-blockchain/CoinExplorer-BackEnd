@@ -2,9 +2,11 @@ package coins
 
 import (
 	"fmt"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+
 	"github.com/go-pg/pg"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
+	"github.com/noah-blockchain/noah-explorer-tools/models"
 )
 
 type Repository struct {
@@ -24,7 +26,8 @@ func (repository *Repository) GetCoins() []models.Coin {
 	var coins []models.Coin
 
 	err := repository.DB.Model(&coins).
-		Column("crr", "volume", "reserve_balance", "name", "symbol").
+		Column("crr", "volume", "reserve_balance", "name", "symbol", "updated_at", "a.address").
+		Join("LEFT JOIN addresses AS a ON a.id = creation_address_id").
 		Where("deleted_at IS NULL").
 		Order("reserve_balance DESC").
 		Select()
@@ -65,4 +68,32 @@ func (repository *Repository) GetCustomCoinsStatusData() (CustomCoinsStatusData,
 		Select(&data)
 
 	return data, err
+}
+
+// Get paginated list of blocks
+func (repository Repository) GetPaginated(pagination *tools.Pagination, field *string, orderBy *string) []models.Coin {
+	var coins []models.Coin
+	var err error
+	fieldSql := "reserve_balance"
+	orderBySql := "DESC"
+
+	if field != nil {
+		fieldSql = *field
+	}
+
+	if orderBy != nil {
+		orderBySql = *orderBy
+	}
+
+	pagination.Total, err = repository.DB.Model(&coins).
+		Column("coin.crr", "coin.volume", "coin.reserve_balance", "coin.name", "coin.symbol", "coin.updated_at", "a.address").
+		Join("LEFT JOIN addresses AS a ON a.id = coin.creation_address_id").
+		Where("coin.deleted_at IS NULL").
+		Apply(pagination.Filter).
+		Order(fmt.Sprintf("coin.%s %s", fieldSql, orderBySql)).
+		SelectAndCount()
+
+	helpers.CheckErr(err)
+
+	return coins
 }

@@ -2,12 +2,13 @@ package tools
 
 import (
 	"fmt"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/core/config"
-	"github.com/go-pg/pg/orm"
-	"github.com/go-pg/pg/urlvalues"
 	"math"
 	"net/http"
 	"strconv"
+
+	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/urlvalues"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/core/config"
 )
 
 type Pagination struct {
@@ -17,7 +18,7 @@ type Pagination struct {
 	Total      int
 }
 
-const DefaultLimit = 50
+const DefaultLimit = 20
 
 func NewPagination(request *http.Request) Pagination {
 	values := urlvalues.Values(request.URL.Query())

@@ -1,24 +1,17 @@
 package cache
 
 import (
-	"encoding/json"
 	"sync"
 	"time"
-
-	"github.com/centrifugal/centrifuge-go"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/blocks"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 )
 
 type ExplorerCache struct {
-	lastBlockId uint64
 	items       *sync.Map
 }
 
 // cache constructor
 func NewCache() *ExplorerCache {
 	cache := &ExplorerCache{
-		lastBlockId: uint64(0),
 		items:       new(sync.Map),
 	}
 
@@ -26,25 +19,17 @@ func NewCache() *ExplorerCache {
 }
 
 // create new cache item
-func (c *ExplorerCache) newCacheItem(value interface{}, ttl interface{}) *CacheItem {
-	switch t := ttl.(type) {
-	case time.Duration:
-		ttl := time.Now().Add(t * time.Second)
-		return &CacheItem{value: value, ttl: &ttl}
-	case int:
-		ttl := c.lastBlockId + uint64(t)
-		return &CacheItem{value: value, btl: &ttl}
-	}
-
-	panic("Invalid cache ttl type.")
+func (c *ExplorerCache) newCacheItem(value interface{}, ttl time.Duration) *Item {
+	end := time.Now().Add(ttl * time.Second)
+	return &Item{value: value, ttl: &end}
 }
 
 // get or store value from cache
-func (c *ExplorerCache) Get(key interface{}, callback func() interface{}, ttl interface{}) interface{} {
+func (c *ExplorerCache) Get(key interface{}, callback func() interface{}, ttl time.Duration) interface{} {
 	v, ok := c.items.Load(key)
 	if ok {
-		item := v.(*CacheItem)
-		if !item.IsExpired(c.lastBlockId) {
+		item := v.(*Item)
+		if !item.IsExpired() {
 			return item.value
 		}
 	}
@@ -53,7 +38,7 @@ func (c *ExplorerCache) Get(key interface{}, callback func() interface{}, ttl in
 }
 
 // save value to cache
-func (c *ExplorerCache) Store(key interface{}, value interface{}, ttl interface{}) interface{} {
+func (c *ExplorerCache) Store(key interface{}, value interface{}, ttl time.Duration) interface{} {
 	c.items.Store(key, c.newCacheItem(value, ttl))
 	return value
 }
@@ -61,8 +46,8 @@ func (c *ExplorerCache) Store(key interface{}, value interface{}, ttl interface{
 // loop for checking items expiration
 func (c *ExplorerCache) ExpirationCheck() {
 	c.items.Range(func(key, value interface{}) bool {
-		item := value.(*CacheItem)
-		if item.IsExpired(c.lastBlockId) {
+		item := value.(*Item)
+		if item.IsExpired() {
 			c.items.Delete(key)
 		}
 
@@ -71,18 +56,19 @@ func (c *ExplorerCache) ExpirationCheck() {
 }
 
 // set new last block id
-func (c *ExplorerCache) SetBlockId(id uint64) {
-	c.lastBlockId = id
-	// clean expired items
-	go c.ExpirationCheck()
-}
+//func (c *ExplorerCache) SetBlockId(id uint64) {
+//	c.lastBlockId = id
+//	// clean expired items
+//	go c.ExpirationCheck()
+//}
+//
+//// update last block id by ws data
+//func (c *ExplorerCache) OnPublish(sub *centrifuge.Subscription, e centrifuge.PublishEvent) {
+//	var block blocks.Resource
+//	err := json.Unmarshal(e.Data, &block)
+//	helpers.CheckErr(err)
+//
+//	// update last block id
+//	c.SetBlockId(block.ID)
+//}
 
-// update last block id by ws data
-func (c *ExplorerCache) OnPublish(sub *centrifuge.Subscription, e centrifuge.PublishEvent) {
-	var block blocks.Resource
-	err := json.Unmarshal(e.Data, &block)
-	helpers.CheckErr(err)
-
-	// update last block id
-	c.SetBlockId(block.ID)
-}

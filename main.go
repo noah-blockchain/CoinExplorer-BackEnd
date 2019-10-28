@@ -21,13 +21,13 @@ func main() {
 	go explorer.MarketService.Run()
 
 	// create ws extender
-	extender := core.NewExtenderWsClient(explorer)
-	defer extender.Close()
+	//extender := core.NewExtenderWsClient(explorer)
+	//defer extender.Close()
 
 	// subscribe to channel and add cache handler
-	sub := extender.CreateSubscription(explorer.Environment.WsBlocksChannel)
-	sub.OnPublish(explorer.Cache)
-	extender.Subscribe(sub)
+	//sub := extender.CreateSubscription(explorer.Environment.WsBlocksChannel)
+	//sub.OnPublish(explorer.Cache)
+	//extender.Subscribe(sub)
 
 	// run api
 	api.Run(db, explorer)

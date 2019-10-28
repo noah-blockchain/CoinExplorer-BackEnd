@@ -2,9 +2,10 @@ package errors
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gopkg.in/go-playground/validator.v8"
-	"net/http"
 )
 
 type Error struct {
