@@ -105,7 +105,7 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Symbol:         coin.Symbol,
 		Price:          getTokenPrice(coin.Volume, coin.ReserveBalance, coin.Crr),
 		Timestamp:      coin.UpdatedAt.Format(time.RFC3339),
-		Creator:        noahAddressFormatting(coin.NoahAddress),
+		Creator:        noahAddressFormatting(coin.Address),
 	}
 
 	return res
