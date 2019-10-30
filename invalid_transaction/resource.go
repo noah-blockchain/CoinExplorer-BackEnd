@@ -2,7 +2,7 @@ package invalid_transaction
 
 import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 	"time"
 )
 

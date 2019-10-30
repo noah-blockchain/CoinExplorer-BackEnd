@@ -3,7 +3,7 @@ package validator
 import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/blocks"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 	"github.com/go-pg/pg"
 )
 

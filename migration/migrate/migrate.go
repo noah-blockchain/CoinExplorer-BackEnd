@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-pg/migrations"
 	"github.com/go-pg/pg"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 	"log"
 )
 

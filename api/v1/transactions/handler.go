@@ -12,8 +12,8 @@ import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction"
-	"github.com/noah-blockchain/noah-explorer-tools/helpers"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/helpers"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 
 // TODO: replace string in StartBlock, EndBlock, Page to int

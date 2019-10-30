@@ -4,7 +4,7 @@ import (
 	"github.com/go-pg/pg"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 
 type Repository struct {

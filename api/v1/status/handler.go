@@ -14,7 +14,7 @@ import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/core/config"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 
 const LastDataCacheTime = time.Duration(60)

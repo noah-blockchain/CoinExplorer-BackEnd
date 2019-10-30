@@ -4,7 +4,7 @@ import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	validatorMeta "github.com/noah-blockchain/CoinExplorer-BackEnd/validator/meta"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 	"time"
 )
 

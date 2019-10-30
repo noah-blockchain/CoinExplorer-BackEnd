@@ -5,7 +5,7 @@ import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/stake"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator/meta"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 
 type Resource struct {

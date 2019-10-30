@@ -3,7 +3,7 @@ package balance
 import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools/market"
-	"github.com/noah-blockchain/noah-explorer-tools/models"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 	"github.com/noah-blockchain/noah-go-node/formula"
 	"math/big"
 )
