@@ -30,7 +30,7 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		ReserveBalance: helpers.QNoahStr2Noah(coin.ReserveBalance),
 		Name:           coin.Name,
 		Symbol:         coin.Symbol,
-		Price:          helpers.QNoahStr2Noah(coin.Price),
+		Price:          coin.Price,
 		Delegated:      coin.Delegated,
 		Timestamp:      coin.UpdatedAt.Format(time.RFC3339),
 		Creator:        fmt.Sprintf("NOAHx%s", coin.Address),
