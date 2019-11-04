@@ -42,7 +42,7 @@ func getCoinsWithPagination(c *gin.Context, req GetCoinsRequest, pagination *too
 	var data []models.Coin
 
 	var field, orderBy *string
-	if req.Filter != nil && isModelsContain(*req.Filter, []string{"crr", "volume", "reserve_balance", "symbol", "price"}) {
+	if req.Filter != nil && isModelsContain(*req.Filter, []string{"crr", "volume", "reserve_balance", "symbol", "price", "capitalization"}) {
 		field = req.Filter
 	}
 
