@@ -16,6 +16,7 @@ type Resource struct {
 	Name           string `json:"name"`
 	Symbol         string `json:"symbol"`
 	Price          string `json:"price"`
+	Capitalization string `json:"capitalization"`
 	Delegated      uint64 `json:"delegated"`
 	Timestamp      string `json:"timestamp"`
 	Creator        string `json:"creator"`
@@ -34,6 +35,7 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Delegated:      coin.Delegated,
 		Timestamp:      coin.UpdatedAt.Format(time.RFC3339),
 		Creator:        fmt.Sprintf("NOAHx%s", coin.Address),
+		Capitalization: coin.Capitalization,
 	}
 
 	return res
