@@ -29,13 +29,13 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Crr:            coin.Crr,
 		Volume:         helpers.QNoahStr2Noah(coin.Volume),
 		ReserveBalance: helpers.QNoahStr2Noah(coin.ReserveBalance),
+		Price:          helpers.QNoahStr2Noah(coin.Price),
+		Capitalization: helpers.QNoahStr2Noah(coin.Capitalization),
 		Name:           coin.Name,
 		Symbol:         coin.Symbol,
-		Price:          coin.Price,
 		Delegated:      coin.Delegated,
 		Timestamp:      coin.UpdatedAt.Format(time.RFC3339),
 		Creator:        fmt.Sprintf("NOAHx%s", coin.Address),
-		Capitalization: coin.Capitalization,
 	}
 
 	return res
