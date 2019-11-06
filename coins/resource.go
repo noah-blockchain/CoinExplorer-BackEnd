@@ -30,7 +30,7 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Volume:         helpers.QNoahStr2Noah(coin.Volume),
 		ReserveBalance: helpers.QNoahStr2Noah(coin.ReserveBalance),
 		Price:          helpers.QNoahStr2Noah(coin.Price),
-		Capitalization: helpers.QNoahStr2Noah(coin.Capitalization),
+		Capitalization: helpers.ConvertCapitalizationQNoahToNoah(coin.Capitalization),
 		Name:           coin.Name,
 		Symbol:         coin.Symbol,
 		Delegated:      coin.Delegated,

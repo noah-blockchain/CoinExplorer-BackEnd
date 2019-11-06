@@ -8,12 +8,10 @@ import (
 
 // default amount of qNoahs in 1 Noah
 var qNoahInNoah = big.NewFloat(1000000000000000000)
-
 var feeDefaultMultiplier = big.NewInt(1000000000000000)
 
 // default amount of unit in one noah
 const unitInNoah = 1000
-
 func QNoahStr2Noah(value string) string {
 	if value == "" {
 		return "0"
@@ -62,4 +60,13 @@ func StringToBigInt(string string) *big.Int {
 	CheckErrBool(err)
 
 	return bInt
+}
+
+func ConvertCapitalizationQNoahToNoah(value string) string {
+	if value == "" {
+		return "0"
+	}
+	var twiceQNoahToNoah = big.NewFloat(1000000000000000000000000000000000000)
+	floatValue, _ := new(big.Float).SetPrec(500).SetString(value)
+	return new(big.Float).SetPrec(500).Quo(floatValue, twiceQNoahToNoah).Text('f', 18)
 }
