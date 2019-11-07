@@ -55,7 +55,7 @@ func (repository Repository) GetPaginated(pagination *tools.Pagination, field *s
 	}
 
 	query := repository.DB.Model(&coins).
-		Column("coin.crr", "coin.volume", "coin.reserve_balance", "coin.name", "coin.symbol", "coin.price", "coin.delegated", "coin.updated_at", "coin.capitalization", "a.address").
+		Column("coin.crr", "coin.volume", "coin.reserve_balance", "coin.name", "coin.symbol", "coin.price", "coin.delegated", "coin.updated_at", "coin.created_at", "coin.capitalization", "a.address").
 		Apply(pagination.Filter).
 		Join("LEFT JOIN addresses AS a ON a.id = coin.creation_address_id")
 

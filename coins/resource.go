@@ -34,7 +34,7 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Name:           coin.Name,
 		Symbol:         coin.Symbol,
 		Delegated:      coin.Delegated,
-		Timestamp:      coin.UpdatedAt.Format(time.RFC3339),
+		Timestamp:      coin.CreatedAt.Format(time.RFC3339),
 		Creator:        fmt.Sprintf("NOAHx%s", coin.Address),
 	}
 
