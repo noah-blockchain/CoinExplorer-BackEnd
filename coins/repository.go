@@ -71,3 +71,20 @@ func (repository Repository) GetPaginated(pagination *tools.Pagination, field *s
 
 	return coins
 }
+
+// Get coin by symbol
+func (repository Repository) GetBySymbol(symbol string) *models.Coin {
+	var coin models.Coin
+
+	err := repository.DB.Model(&coin).
+		Column("coin.crr", "coin.volume", "coin.reserve_balance", "coin.name", "coin.symbol", "coin.price", "coin.delegated", "coin.updated_at", "coin.created_at", "coin.capitalization", "a.address").
+		Join("LEFT JOIN addresses AS a ON a.id = coin.creation_address_id").
+		Where("coin.symbol LIKE ?", fmt.Sprintf("%%%s%%", symbol)).
+		Select()
+
+	if err != nil {
+		return nil
+	}
+
+	return &coin
+}

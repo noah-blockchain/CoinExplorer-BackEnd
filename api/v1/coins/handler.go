@@ -1,6 +1,8 @@
 package coins
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/coins"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/core"
@@ -8,7 +10,6 @@ import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
-	"net/http"
 )
 
 //const CacheCoinsCount = time.Duration(15)
@@ -20,6 +21,10 @@ type GetCoinsRequest struct {
 	Symbol  *string `form:"symbol"   binding:"omitempty"`
 	Filter  *string `form:"filter"   binding:"omitempty"`
 	OrderBy *string `form:"order_by" binding:"omitempty"`
+}
+
+type GetCoinBySymbolRequest struct {
+	Symbol string `uri:"symbol"`
 }
 
 type CacheCoinsData struct {
@@ -93,4 +98,30 @@ func GetCoins(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, resource.TransformPaginatedCollection(data, coins.Resource{}, pagination))
+}
+
+// Get coin detail
+func GetCoinBySymbol(c *gin.Context) {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+
+	// validate request
+	var request GetCoinBySymbolRequest
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		errors.SetValidationErrorResponse(err, c)
+		return
+	}
+
+	// fetch coin by symbol
+	coin := explorer.CoinRepository.GetBySymbol(request.Symbol)
+
+	// check coin to existing
+	if coin == nil {
+		errors.SetErrorResponse(http.StatusNotFound, http.StatusNotFound, "Coin not found.", c)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": new(coins.Resource).Transform(*coin),
+	})
 }
