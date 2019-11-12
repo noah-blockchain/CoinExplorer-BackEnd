@@ -47,7 +47,7 @@ func (repository Repository) GetPaginatedTxsByFilter(filter tools.Filter, pagina
 	var err error
 
 	pagination.Total, err = repository.db.Model(&transactions).
-		Column("transaction.*", "FromAddress.address").
+		Column("transaction.*", "FromAddress.address", "GasCoin.symbol").
 		Apply(filter.Filter).
 		Apply(pagination.Filter).
 		Order("transaction.id DESC").

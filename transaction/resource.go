@@ -3,31 +3,36 @@ package transaction
 import (
 	"encoding/base64"
 	"encoding/json"
+	"reflect"
+	"time"
+
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction/data_resources"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
-	"reflect"
-	"time"
 )
 
 type Resource struct {
-	Txn       uint64                 `json:"txn"`
-	Hash      string                 `json:"hash"`
-	Nonce     uint64                 `json:"nonce"`
-	Block     uint64                 `json:"block"`
-	Timestamp string                 `json:"timestamp"`
-	Fee       string                 `json:"fee"`
-	Type      uint8                  `json:"type"`
-	Payload   string                 `json:"payload"`
-	From      string                 `json:"from"`
-	Data      resource.ItemInterface `json:"data"`
+	Txn         uint64                 `json:"txn"`
+	Hash        string                 `json:"hash"`
+	Nonce       uint64                 `json:"nonce"`
+	Block       uint64                 `json:"block"`
+	Timestamp   string                 `json:"timestamp"`
+	Fee         string                 `json:"fee"`
+	Type        uint8                  `json:"type"`
+	Payload     string                 `json:"payload"`
+	From        string                 `json:"from"`
+	Data        resource.ItemInterface `json:"data"`
+	Gas         uint64                 `json:"gas"`
+	GasPrice    uint64                 `json:"gas_price"`
+	GasCoinName string                 `json:"gas_coin"`
+	To          *string                `json:"to,omitempty"`
 }
 
 func (Resource) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
 	tx := model.(models.Transaction)
 
-	return Resource{
+	res := Resource{
 		Txn:       tx.ID,
 		Hash:      tx.GetHash(),
 		Nonce:     tx.Nonce,
@@ -38,7 +43,22 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Payload:   base64.StdEncoding.EncodeToString(tx.Payload[:]),
 		From:      tx.FromAddress.GetAddress(),
 		Data:      TransformTxData(tx),
+		Gas:       tx.Gas,
+		GasPrice:  tx.GasPrice,
 	}
+
+	if tx.GasCoin != nil {
+		res.GasCoinName = tx.GasCoin.Symbol
+	}
+
+	if tx.Type == models.TxTypeSend {
+		var sendTxData models.SendTxData
+		if err := json.Unmarshal(tx.Data, &sendTxData); err == nil {
+			res.To = &sendTxData.To
+		}
+	}
+
+	return res
 }
 
 type TransformTxConfig struct {
