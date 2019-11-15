@@ -1,6 +1,8 @@
 package coins
 
 import (
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -47,7 +49,8 @@ func getCoinsWithPagination(c *gin.Context, req GetCoinsRequest, pagination *too
 	var data []models.Coin
 
 	var field, orderBy *string
-	if req.Filter != nil && isModelsContain(*req.Filter, []string{"crr", "volume", "reserve_balance", "symbol", "price", "capitalization", "delegated"}) {
+	if req.Filter != nil && isModelsContain(*req.Filter, []string{"crr", "volume", "reserve_balance", "symbol",
+		"price", "capitalization", "delegated"}) {
 		field = req.Filter
 	}
 
@@ -124,4 +127,48 @@ func GetCoinBySymbol(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": new(coins.Resource).Transform(*coin),
 	})
+}
+
+// Get list of transactions by noah address
+func GetTransactions(c *gin.Context) {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+
+	// validate request
+	var request GetCoinBySymbolRequest
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		errors.SetValidationErrorResponse(err, c)
+		return
+	}
+
+	// fetch data
+	pagination := tools.NewPagination(c.Request)
+	txs := explorer.TransactionRepository.GetPaginatedTxsByCoin(request.Symbol, &pagination)
+
+	c.JSON(http.StatusOK, resource.TransformPaginatedCollection(txs, transaction.Resource{}, pagination))
+}
+
+// Get validator detail by public key
+func GetValidators(c *gin.Context) {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+
+	// validate request
+	var request GetCoinBySymbolRequest
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		errors.SetValidationErrorResponse(err, c)
+		return
+	}
+
+	pagination := tools.NewPagination(c.Request)
+	data := explorer.ValidatorRepository.GetValidatorsBySymbol(request.Symbol, &pagination)
+
+	// check validator to existing
+	if data == nil {
+		errors.SetErrorResponse(http.StatusNotFound, http.StatusNotFound, "Validator not found.", c)
+		return
+	}
+	c.JSON(http.StatusOK,
+		resource.TransformPaginatedCollection(data, validator.ResourceWithValidators{}, pagination),
+	)
 }

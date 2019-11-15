@@ -15,10 +15,11 @@ require (
 	github.com/go-pg/pg v8.0.5+incompatible
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
-	github.com/noah-blockchain/coinExplorer-tools v0.1.1
+	github.com/noah-blockchain/coinExplorer-tools v0.1.2
 	github.com/noah-blockchain/noah-go-node v0.2.0
 	github.com/ugorji/go v1.1.7 // indirect
 	golang.org/x/time v0.0.0-20190921001708-c4c64cad1fd0
 	gopkg.in/go-playground/validator.v8 v8.18.2
+	gopkg.in/guregu/null.v3 v3.4.0
 	mellium.im/sasl v0.2.1 // indirect
 )

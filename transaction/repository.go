@@ -1,10 +1,10 @@
 package transaction
 
 import (
+	"github.com/go-pg/pg"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
-	"github.com/go-pg/pg"
 	"time"
 )
 
@@ -32,6 +32,26 @@ func (repository Repository) GetPaginatedTxsByAddresses(addresses []string, filt
 		Column("transaction.*", "FromAddress.address", "GasCoin.symbol").
 		Where("a.address IN (?)", pg.In(addresses)).
 		Apply(filter.Filter).
+		Apply(pagination.Filter).
+		Order("transaction.id DESC").
+		SelectAndCount()
+
+	helpers.CheckErr(err)
+
+	return transactions
+}
+
+// Get paginated list of transactions by address filter
+func (repository Repository) GetPaginatedTxsByCoin(coinSymbol string, pagination *tools.Pagination) []models.Transaction {
+	var transactions []models.Transaction
+	var err error
+
+	pagination.Total, err = repository.db.Model(&transactions).
+		Join("INNER JOIN coins AS c").
+		JoinOn("c.creation_transaction_id = transaction.id").
+		JoinOn("c.symbol = ?", coinSymbol).
+		ColumnExpr("DISTINCT transaction.id").
+		Column("transaction.*", "FromAddress.address", "GasCoin.symbol").
 		Apply(pagination.Filter).
 		Order("transaction.id DESC").
 		SelectAndCount()

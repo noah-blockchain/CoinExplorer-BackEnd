@@ -10,5 +10,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 	{
 		coins.GET("", GetCoins)
 		coins.GET("/:symbol", GetCoinBySymbol)
+		coins.GET("/:symbol/transactions", GetTransactions)
+		coins.GET("/:symbol/validators", GetValidators)
 	}
 }

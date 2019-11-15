@@ -6,6 +6,7 @@ import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/stake"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator/meta"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"gopkg.in/guregu/null.v3/zero"
 )
 
 type Resource struct {
@@ -47,7 +48,7 @@ func (r Resource) Transform(model resource.ItemInterface, values ...resource.Par
 
 // return validator stake and part of the total (%)
 func (r Resource) getValidatorPartAndStake(validator models.Validator, totalStake string, validators []uint64) (*string, *string) {
-	var part, stake *string
+	var part, stakeFull *string
 
 	if helpers.InArray(validator.ID, validators) && validator.TotalStake != nil {
 		val := helpers.CalculatePercent(*validator.TotalStake, totalStake)
@@ -56,10 +57,10 @@ func (r Resource) getValidatorPartAndStake(validator models.Validator, totalStak
 
 	if validator.TotalStake != nil {
 		val := helpers.QNoahStr2Noah(*validator.TotalStake)
-		stake = &val
+		stakeFull = &val
 	}
 
-	return part, stake
+	return part, stakeFull
 }
 
 // return list of delegators and count
@@ -68,4 +69,24 @@ func (r Resource) getDelegatorsListAndCount(validator models.Validator) (*[]reso
 	delegators := resource.TransformCollection(validator.Stakes, stake.Resource{})
 
 	return &delegators, &delegatorsCount
+}
+
+type ResourceWithValidators struct {
+	PublicKey   string `json:"public_key"`
+	Name        string `json:"name"`
+	SiteUrl     string `json:"site_url"`
+	IconUrl     string `json:"icon_url"`
+	Description string `json:"description"`
+}
+
+func (ResourceWithValidators) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
+	validator := model.(models.Validator)
+
+	return ResourceWithValidators{
+		PublicKey:   validator.PublicKey,
+		Name:        zero.StringFromPtr(validator.Name).String,
+		SiteUrl:     zero.StringFromPtr(validator.SiteUrl).String,
+		IconUrl:     zero.StringFromPtr(validator.IconUrl).String,
+		Description: zero.StringFromPtr(validator.Description).String,
+	}
 }

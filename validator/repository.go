@@ -1,10 +1,11 @@
 package validator
 
 import (
+	"github.com/go-pg/pg"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/blocks"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
-	"github.com/go-pg/pg"
 )
 
 type Repository struct {
@@ -81,5 +82,24 @@ func (repository Repository) GetValidators() []models.Validator {
 	err := repository.db.Model(&validators).Select()
 	helpers.CheckErr(err)
 
+	return validators
+}
+
+func (repository Repository) GetValidatorsBySymbol(coinSymbol string, pagination *tools.Pagination) []models.Validator {
+	var validators []models.Validator
+	var err error
+
+	pagination.Total, err = repository.db.Model(&validators).
+		Join("INNER JOIN stakes as s").
+		JoinOn("s.validator_id = validator.id").
+		Join("INNER JOIN coins as c").
+		JoinOn("s.coin_id = c.id").
+		Where("c.symbol=?", coinSymbol).
+		ColumnExpr("DISTINCT validator.public_key").
+		Column("validator.name", "validator.site_url", "validator.icon_url", "validator.description").
+		Apply(pagination.Filter).
+		SelectAndCount()
+
+	helpers.CheckErr(err)
 	return validators
 }
