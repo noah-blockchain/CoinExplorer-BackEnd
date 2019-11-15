@@ -1,6 +1,7 @@
 package coins
 
 import (
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/balance"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator"
 	"net/http"
@@ -145,7 +146,7 @@ func GetTransactions(c *gin.Context) {
 	pagination := tools.NewPagination(c.Request)
 	txs := explorer.TransactionRepository.GetPaginatedTxsByCoin(request.Symbol, &pagination)
 
-	c.JSON(http.StatusOK, resource.TransformPaginatedCollection(txs, transaction.Resource{}, pagination))
+	c.JSON(http.StatusOK, resource.TransformPaginatedCollection(txs, transaction.ResourceTransactionOutput{}, pagination))
 }
 
 // Get validator detail by public key
@@ -170,5 +171,24 @@ func GetValidators(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK,
 		resource.TransformPaginatedCollection(data, validator.ResourceWithValidators{}, pagination),
+	)
+}
+
+func GetAddressBalances(c *gin.Context) {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+
+	// validate request
+	var request GetCoinBySymbolRequest
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		errors.SetValidationErrorResponse(err, c)
+		return
+	}
+
+	pagination := tools.NewPagination(c.Request)
+	balances := explorer.AddressRepository.GetBalancesByCoinSymbol(request.Symbol, &pagination)
+
+	c.JSON(http.StatusOK,
+		resource.TransformPaginatedCollection(balances, balance.ResourceCoinAddressBalances{}, pagination),
 	)
 }

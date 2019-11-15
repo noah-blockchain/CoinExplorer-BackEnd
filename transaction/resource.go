@@ -92,3 +92,53 @@ func TransformTxData(tx models.Transaction) resource.Interface {
 
 	return config.Resource.Transform(val, tx)
 }
+
+type ResourceTransactionOutput struct {
+	Txn       uint64 `json:"txn"`
+	Hash      string `json:"hash"`
+	Nonce     uint64 `json:"nonce"`
+	Block     uint64 `json:"block"`
+	Timestamp string `json:"timestamp"`
+	Fee       string `json:"fee"`
+	Type      uint8  `json:"type"`
+	From      string `json:"from"`
+	//Data        resource.ItemInterface `json:"data"`
+	Gas         uint64  `json:"gas"`
+	GasPrice    uint64  `json:"gas_price"`
+	GasCoinName string  `json:"gas_coin"`
+	To          *string `json:"to,omitempty"`
+}
+
+func (ResourceTransactionOutput) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
+	txOutput := model.(models.TransactionOutput)
+
+	res := ResourceTransactionOutput{
+		Txn:       txOutput.ID,
+		Hash:      txOutput.Transaction.GetHash(),
+		Nonce:     txOutput.Transaction.Nonce,
+		Block:     txOutput.Transaction.BlockID,
+		Timestamp: txOutput.Transaction.CreatedAt.Format(time.RFC3339),
+		Fee:       helpers.Fee2Noah(txOutput.Transaction.GetFee()),
+		Type:      txOutput.Transaction.Type,
+		From:      txOutput.Transaction.FromAddress.GetAddress(),
+		Gas:       txOutput.Transaction.Gas,
+		GasPrice:  txOutput.Transaction.GasPrice,
+	}
+
+	//if txOutput.Transaction != nil {
+	//	res.Data = TransformTxData(*txOutput.Transaction)
+	//}
+
+	if txOutput.Transaction.GasCoin != nil {
+		res.GasCoinName = txOutput.Transaction.GasCoin.Symbol
+	}
+
+	if txOutput.Transaction.Type == models.TxTypeSend {
+		var sendTxData models.SendTxData
+		if err := json.Unmarshal(txOutput.Transaction.Data, &sendTxData); err == nil {
+			res.To = &sendTxData.To
+		}
+	}
+
+	return res
+}

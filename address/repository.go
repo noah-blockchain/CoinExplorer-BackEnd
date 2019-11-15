@@ -1,9 +1,10 @@
 package address
 
 import (
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
-	"github.com/noah-blockchain/coinExplorer-tools/models"
 	"github.com/go-pg/pg"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
+	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 
 type Repository struct {
@@ -39,4 +40,21 @@ func (repository Repository) GetByAddresses(noahAddresses []string) []models.Add
 	helpers.CheckErr(err)
 
 	return addresses
+}
+
+// Get address model by address
+func (repository Repository) GetBalancesByCoinSymbol(coinSymbol string, pagination *tools.Pagination) []models.Balance {
+	var balances []models.Balance
+	var err error
+
+	pagination.Total, err = repository.DB.Model(&balances).
+		Join("LEFT JOIN coins as c").
+		JoinOn("balance.coin_id = c.id").
+		Where("c.symbol=?", coinSymbol).
+		Column("Address.address", "balance.value").
+		Apply(pagination.Filter).
+		SelectAndCount()
+
+	helpers.CheckErr(err)
+	return balances
 }

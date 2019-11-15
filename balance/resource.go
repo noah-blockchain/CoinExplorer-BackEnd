@@ -19,3 +19,17 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Amount: helpers.QNoahStr2Noah(balance.Value),
 	}
 }
+
+type ResourceCoinAddressBalances struct {
+	Address string `json:"coin"`
+	Amount  string `json:"amount"`
+}
+
+func (ResourceCoinAddressBalances) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
+	balance := model.(models.Balance)
+
+	return ResourceCoinAddressBalances{
+		Address: balance.Address.GetAddress(),
+		Amount:  helpers.QNoahStr2Noah(balance.Value),
+	}
+}

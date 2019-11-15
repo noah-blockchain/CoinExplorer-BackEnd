@@ -41,26 +41,6 @@ func (repository Repository) GetPaginatedTxsByAddresses(addresses []string, filt
 	return transactions
 }
 
-// Get paginated list of transactions by address filter
-func (repository Repository) GetPaginatedTxsByCoin(coinSymbol string, pagination *tools.Pagination) []models.Transaction {
-	var transactions []models.Transaction
-	var err error
-
-	pagination.Total, err = repository.db.Model(&transactions).
-		Join("INNER JOIN coins AS c").
-		JoinOn("c.creation_transaction_id = transaction.id").
-		JoinOn("c.symbol = ?", coinSymbol).
-		ColumnExpr("DISTINCT transaction.id").
-		Column("transaction.*", "FromAddress.address", "GasCoin.symbol").
-		Apply(pagination.Filter).
-		Order("transaction.id DESC").
-		SelectAndCount()
-
-	helpers.CheckErr(err)
-
-	return transactions
-}
-
 // Get paginated list of transactions by select filter
 func (repository Repository) GetPaginatedTxsByFilter(filter tools.Filter, pagination *tools.Pagination) []models.Transaction {
 	var transactions []models.Transaction
@@ -143,6 +123,24 @@ func (repository Repository) Get24hTransactionsData() Tx24hData {
 		Select(&data)
 
 	helpers.CheckErr(err)
-
 	return data
+}
+
+// Get paginated list of transactions by coin
+func (repository Repository) GetPaginatedTxsByCoin(coinSymbol string, pagination *tools.Pagination) []models.TransactionOutput {
+	var transactionOutputs []models.TransactionOutput
+	var err error
+
+	pagination.Total, err = repository.db.Model(&transactionOutputs).
+		Join("LEFT JOIN coins as c").
+		JoinOn("c.id = transaction_output.coin_id").
+		JoinOn("c.symbol = ?", coinSymbol).
+		Column("Transaction", "transaction_output.value",
+			"Transaction.FromAddress", "Transaction.GasCoin").
+		Apply(pagination.Filter).
+		Order("transaction_output.id DESC").
+		SelectAndCount()
+
+	helpers.CheckErr(err)
+	return transactionOutputs
 }
