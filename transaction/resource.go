@@ -94,19 +94,19 @@ func TransformTxData(tx models.Transaction) resource.Interface {
 }
 
 type ResourceTransactionOutput struct {
-	Txn       uint64 `json:"txn"`
-	Hash      string `json:"hash"`
-	Nonce     uint64 `json:"nonce"`
-	Block     uint64 `json:"block"`
-	Timestamp string `json:"timestamp"`
-	Fee       string `json:"fee"`
-	Type      uint8  `json:"type"`
-	From      string `json:"from"`
-	//Data        resource.ItemInterface `json:"data"`
+	Txn         uint64  `json:"txn"`
+	Hash        string  `json:"hash"`
+	Nonce       uint64  `json:"nonce"`
+	Block       uint64  `json:"block"`
+	Timestamp   string  `json:"timestamp"`
+	Fee         string  `json:"fee"`
+	Type        uint8   `json:"type"`
+	From        string  `json:"from"`
 	Gas         uint64  `json:"gas"`
 	GasPrice    uint64  `json:"gas_price"`
 	GasCoinName string  `json:"gas_coin"`
 	To          *string `json:"to,omitempty"`
+	//Data        resource.ItemInterface `json:"data"`
 }
 
 func (ResourceTransactionOutput) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {

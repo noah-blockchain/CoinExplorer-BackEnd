@@ -85,7 +85,7 @@ func (repository Repository) GetBySymbol(symbol string) *models.Coin {
 			"coin.start_price", "coin.start_volume", "coin.start_reserve_balance",
 			"coin.description", "coin.icon_url", "a.address").
 		Join("LEFT JOIN addresses AS a ON a.id = coin.creation_address_id").
-		Where("coin.symbol LIKE ?", fmt.Sprintf("%%%s%%", symbol)).
+		Where("coin.symbol = ?", symbol).
 		Select()
 
 	if err != nil {
