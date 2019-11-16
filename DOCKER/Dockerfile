@@ -10,10 +10,10 @@ COPY . ${APP_PATH}
 
 WORKDIR ${APP_PATH}
 
-RUN make create_vendor && \
-    make build && \
-    cp ./builds/coin-explorer /usr/local/bin/coin-explorer
+RUN make create_vendor && make build
 
+FROM debian:buster-slim as executor
+COPY --from=builder /home/CoinExplorer-BackEnd/builds/coin-explorer /usr/local/bin/coin-explorer
 EXPOSE 9070
 CMD ["coin-explorer"]
 STOPSIGNAL SIGTERM
