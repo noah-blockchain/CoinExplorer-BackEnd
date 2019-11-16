@@ -17,7 +17,7 @@ type Resource struct {
 	Hash        string                 `json:"hash"`
 	Nonce       uint64                 `json:"nonce"`
 	Block       uint64                 `json:"block"`
-	Timestamp   string                 `json:"timestamp"`
+	CreatedAt   string                 `json:"created_at"`
 	Fee         string                 `json:"fee"`
 	Type        uint8                  `json:"type"`
 	Payload     string                 `json:"payload"`
@@ -37,7 +37,7 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Hash:      tx.GetHash(),
 		Nonce:     tx.Nonce,
 		Block:     tx.BlockID,
-		Timestamp: tx.CreatedAt.Format(time.RFC3339),
+		CreatedAt: tx.CreatedAt.Format(time.RFC3339),
 		Fee:       helpers.Fee2Noah(tx.GetFee()),
 		Type:      tx.Type,
 		Payload:   base64.StdEncoding.EncodeToString(tx.Payload[:]),
@@ -94,30 +94,30 @@ func TransformTxData(tx models.Transaction) resource.Interface {
 }
 
 type ResourceTransactionOutput struct {
-	Txn         uint64  `json:"txn"`
-	Hash        string  `json:"hash"`
-	Nonce       uint64  `json:"nonce"`
-	Block       uint64  `json:"block"`
-	Timestamp   string  `json:"timestamp"`
-	Fee         string  `json:"fee"`
-	Type        uint8   `json:"type"`
-	From        string  `json:"from"`
-	Gas         uint64  `json:"gas"`
-	GasPrice    uint64  `json:"gas_price"`
-	GasCoinName string  `json:"gas_coin"`
-	To          *string `json:"to,omitempty"`
-	//Data        resource.ItemInterface `json:"data"`
+	Txn         uint64                 `json:"txn"`
+	Hash        string                 `json:"hash"`
+	Nonce       uint64                 `json:"nonce"`
+	Block       uint64                 `json:"block"`
+	CreatedAt   string                 `json:"created_at"`
+	Fee         string                 `json:"fee"`
+	Type        uint8                  `json:"type"`
+	From        string                 `json:"from"`
+	Gas         uint64                 `json:"gas"`
+	GasPrice    uint64                 `json:"gas_price"`
+	GasCoinName string                 `json:"gas_coin"`
+	To          *string                `json:"to,omitempty"`
+	Data        resource.ItemInterface `json:"data"`
 }
 
 func (ResourceTransactionOutput) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
 	txOutput := model.(models.TransactionOutput)
 
 	res := ResourceTransactionOutput{
-		Txn:       txOutput.ID,
+		Txn:       txOutput.Transaction.ID,
 		Hash:      txOutput.Transaction.GetHash(),
 		Nonce:     txOutput.Transaction.Nonce,
 		Block:     txOutput.Transaction.BlockID,
-		Timestamp: txOutput.Transaction.CreatedAt.Format(time.RFC3339),
+		CreatedAt: txOutput.Transaction.CreatedAt.Format(time.RFC3339),
 		Fee:       helpers.Fee2Noah(txOutput.Transaction.GetFee()),
 		Type:      txOutput.Transaction.Type,
 		From:      txOutput.Transaction.FromAddress.GetAddress(),
@@ -125,9 +125,9 @@ func (ResourceTransactionOutput) Transform(model resource.ItemInterface, params 
 		GasPrice:  txOutput.Transaction.GasPrice,
 	}
 
-	//if txOutput.Transaction != nil {
-	//	res.Data = TransformTxData(*txOutput.Transaction)
-	//}
+	if txOutput.Transaction != nil {
+		res.Data = TransformTxData(*txOutput.Transaction)
+	}
 
 	if txOutput.Transaction.GasCoin != nil {
 		res.GasCoinName = txOutput.Transaction.GasCoin.Symbol

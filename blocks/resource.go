@@ -13,7 +13,7 @@ type Resource struct {
 	Size        uint64               `json:"size"`
 	NumTxs      uint32               `json:"txCount"`
 	BlockTime   float64              `json:"blockTime"`
-	Timestamp   string               `json:"timestamp"`
+	CreatedAt   string               `json:"created_at"`
 	BlockReward string               `json:"reward"`
 	Hash        string               `json:"hash"`
 	Validators  []resource.Interface `json:"validators"`
@@ -28,7 +28,7 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		Size:        block.Size,
 		NumTxs:      block.NumTxs,
 		BlockTime:   helpers.Nano2Seconds(block.BlockTime),
-		Timestamp:   block.CreatedAt.Format(time.RFC3339),
+		CreatedAt:   block.CreatedAt.Format(time.RFC3339),
 		BlockReward: helpers.QNoahStr2Noah(block.BlockReward),
 		Hash:        block.GetHash(),
 		Validators:  resource.TransformCollection(block.BlockValidators, ValidatorResource{}),
