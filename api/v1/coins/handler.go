@@ -1,17 +1,18 @@
 package coins
 
 import (
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/balance"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/balance"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/coins"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/core"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/errors"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/stake"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 
@@ -190,5 +191,30 @@ func GetAddressBalances(c *gin.Context) {
 
 	c.JSON(http.StatusOK,
 		resource.TransformPaginatedCollection(balances, balance.ResourceCoinAddressBalances{}, pagination),
+	)
+}
+
+// Get validator detail by public key
+func GetDelegators(c *gin.Context) {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+
+	// validate request
+	var request GetCoinBySymbolRequest
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		errors.SetValidationErrorResponse(err, c)
+		return
+	}
+
+	pagination := tools.NewPagination(c.Request)
+	data := explorer.StakeRepository.GetPaginatedStakeForCoin(request.Symbol, &pagination)
+
+	// check validator to existing
+	if data == nil {
+		errors.SetErrorResponse(http.StatusNotFound, http.StatusNotFound, "Validator not found.", c)
+		return
+	}
+	c.JSON(http.StatusOK,
+		resource.TransformPaginatedCollection(data, stake.ResourceStakeDelegation{}, pagination),
 	)
 }

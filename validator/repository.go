@@ -58,7 +58,6 @@ func (repository Repository) GetActiveValidatorIds() []uint64 {
 		Select(&ids)
 
 	helpers.CheckErr(err)
-
 	return ids
 }
 
@@ -99,6 +98,16 @@ func (repository Repository) GetValidatorsBySymbol(coinSymbol string, pagination
 		Column("validator.name", "validator.site_url", "validator.icon_url", "validator.description").
 		Apply(pagination.Filter).
 		SelectAndCount()
+
+	helpers.CheckErr(err)
+	return validators
+}
+
+func (repository Repository) GetValidatorsWithPagination(pagination *tools.Pagination) []models.Validator {
+	var validators []models.Validator
+	var err error
+
+	pagination.Total, err = repository.db.Model(&validators).SelectAndCount()
 
 	helpers.CheckErr(err)
 	return validators

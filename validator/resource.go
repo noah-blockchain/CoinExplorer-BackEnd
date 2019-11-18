@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"github.com/AlekSi/pointer"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/stake"
@@ -20,9 +21,8 @@ type Resource struct {
 }
 
 type Params struct {
-	TotalStake           string // total stake of current active validator ids (by last block)
-	ActiveValidatorsIDs  []uint64
-	IsDelegatorsRequired bool
+	TotalStake          string // total stake of current active validator ids (by last block)
+	ActiveValidatorsIDs []uint64
 }
 
 // Required extra params: object type of Params.
@@ -31,7 +31,7 @@ func (r Resource) Transform(model resource.ItemInterface, values ...resource.Par
 	params := values[0].(Params)
 	part, validatorStake := r.getValidatorPartAndStake(validator, params.TotalStake, params.ActiveValidatorsIDs)
 
-	result := Resource{
+	res := Resource{
 		PublicKey: validator.GetPublicKey(),
 		Status:    validator.Status,
 		Stake:     validatorStake,
@@ -39,11 +39,11 @@ func (r Resource) Transform(model resource.ItemInterface, values ...resource.Par
 		Meta:      new(meta.Resource).Transform(validator),
 	}
 
-	if params.IsDelegatorsRequired {
-		result.DelegatorList, result.DelegatorCount = r.getDelegatorsListAndCount(validator)
+	if validator.TotalStake != nil {
+		res.Stake = pointer.ToString(helpers.QNoahStr2Noah(*validator.TotalStake))
 	}
 
-	return result
+	return res
 }
 
 // return validator stake and part of the total (%)
@@ -83,10 +83,38 @@ func (ResourceWithValidators) Transform(model resource.ItemInterface, params ...
 	validator := model.(models.Validator)
 
 	return ResourceWithValidators{
-		PublicKey:   validator.PublicKey,
+		PublicKey:   validator.GetPublicKey(),
 		Name:        zero.StringFromPtr(validator.Name).String,
 		SiteUrl:     zero.StringFromPtr(validator.SiteUrl).String,
 		IconUrl:     zero.StringFromPtr(validator.IconUrl).String,
 		Description: zero.StringFromPtr(validator.Description).String,
 	}
+}
+
+type ResourceAggregator struct {
+	Meta       resource.Interface `json:"meta"`
+	PublicKey  string             `json:"public_key"`
+	Stake      *string            `json:"stake"`
+	Commission uint64             `json:"commission"`
+	CreatedAt  string             `json:"created_at"`
+}
+
+func (ResourceAggregator) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
+	validator := model.(models.Validator)
+
+	res := ResourceAggregator{
+		PublicKey: validator.PublicKey,
+		Stake:     validator.TotalStake,
+		Meta: new(meta.Resource).Transform(validator),
+	}
+
+	if validator.Commission != nil {
+		res.Commission = *validator.Commission
+	}
+
+	if validator.TotalStake != nil {
+		res.Stake = pointer.ToString(helpers.QNoahStr2Noah(*validator.TotalStake))
+	}
+
+	return res
 }

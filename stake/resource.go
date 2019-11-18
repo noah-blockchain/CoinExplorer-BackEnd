@@ -23,3 +23,21 @@ func (Resource) Transform(model resource.ItemInterface, params ...resource.Param
 		NoahValue: helpers.QNoahStr2Noah(stake.NoahValue),
 	}
 }
+
+type ResourceStakeDelegation struct {
+	Address   string `json:"address"`
+	Value     string `json:"value"`
+	NoahValue string `json:"noah_value"`
+	PublicKey string `json:"public_key"`
+}
+
+func (ResourceStakeDelegation) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
+	stake := model.(models.Stake)
+
+	return ResourceStakeDelegation{
+		Address:   stake.OwnerAddress.GetAddress(),
+		PublicKey: stake.Validator.GetPublicKey(),
+		Value:     helpers.QNoahStr2Noah(stake.Value),
+		NoahValue: helpers.QNoahStr2Noah(stake.NoahValue),
+	}
+}

@@ -13,5 +13,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 		coins.GET("/:symbol/transactions", GetTransactions)
 		coins.GET("/:symbol/validators", GetValidators)
 		coins.GET("/:symbol/balances", GetAddressBalances)
+		coins.GET("/:symbol/delegators", GetDelegators)
+
 	}
 }

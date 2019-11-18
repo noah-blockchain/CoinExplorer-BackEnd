@@ -90,9 +90,9 @@ func GetValidator(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": validator.Resource{}.Transform(*data, validator.Params{
-			TotalStake:           totalStake,
-			ActiveValidatorsIDs:  activeValidatorIDs,
-			IsDelegatorsRequired: true,
+			TotalStake:          totalStake,
+			ActiveValidatorsIDs: activeValidatorIDs,
+			//IsDelegatorsRequired: true,
 		}),
 	})
 }
@@ -114,9 +114,9 @@ func GetValidators(c *gin.Context) {
 	// add params to each model resource
 	resourceCallback := func(model resource.ParamInterface) resource.ParamsInterface {
 		return resource.ParamsInterface{validator.Params{
-			TotalStake:           totalStake,
-			ActiveValidatorsIDs:  activeValidatorIDs,
-			IsDelegatorsRequired: false,
+			TotalStake:          totalStake,
+			ActiveValidatorsIDs: activeValidatorIDs,
+			//IsDelegatorsRequired: false,
 		}}
 	}
 
@@ -141,4 +141,21 @@ func getTotalStakeByActiveValidators(explorer *core.Explorer, validators []uint6
 	return explorer.Cache.Get("validators_total_stake", func() interface{} {
 		return explorer.ValidatorRepository.GetTotalStakeByActiveValidators(validators)
 	}, CacheBlocksCount).(string)
+}
+
+// Get list of validators
+func GetValidatorsFull(c *gin.Context) {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+
+	// fetch validators
+	pagination := tools.NewPagination(c.Request)
+	validators := explorer.ValidatorRepository.GetValidatorsWithPagination(&pagination)
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": resource.TransformPaginatedCollection(
+			validators,
+			validator.ResourceAggregator{},
+			pagination,
+		),
+	})
 }
