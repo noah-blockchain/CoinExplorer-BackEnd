@@ -160,7 +160,7 @@ func GetAggregatedValidators(c *gin.Context) {
 	resources := make([]validator.ResourceAggregator, len(data))
 	for i, d := range data {
 		resources[i] = validator.ResourceAggregator{
-			PublicKey: d.PublicKey,
+			PublicKey: d.GetPublicKey(),
 			Meta:      new(meta.Resource).Transform(d),
 			Uptime:    d.Uptime,
 			CreatedAt: d.CreatedAt.Format(time.RFC3339),
