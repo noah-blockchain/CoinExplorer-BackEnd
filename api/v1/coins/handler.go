@@ -8,6 +8,7 @@ import (
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/coins"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/core"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/errors"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/stake"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
@@ -36,27 +37,17 @@ type CacheCoinsData struct {
 	Pagination tools.Pagination
 }
 
-func isModelsContain(value string, values []string) bool {
-	for _, item := range values {
-		if item == value {
-			return true
-		}
-	}
-
-	return false
-}
-
 func getCoinsWithPagination(c *gin.Context, req GetCoinsRequest, pagination *tools.Pagination) []models.Coin {
 	explorer := c.MustGet("explorer").(*core.Explorer)
 	var data []models.Coin
 
 	var field, orderBy *string
-	if req.Filter != nil && isModelsContain(*req.Filter, []string{"crr", "volume", "reserve_balance", "symbol",
+	if req.Filter != nil && helpers.IsModelsContain(*req.Filter, []string{"crr", "volume", "reserve_balance", "symbol",
 		"price", "capitalization", "delegated"}) {
 		field = req.Filter
 	}
 
-	if req.OrderBy != nil && isModelsContain(*req.OrderBy, []string{"ASC", "DESC"}) {
+	if req.OrderBy != nil && helpers.IsModelsContain(*req.OrderBy, []string{"ASC", "DESC"}) {
 		orderBy = req.OrderBy
 	}
 

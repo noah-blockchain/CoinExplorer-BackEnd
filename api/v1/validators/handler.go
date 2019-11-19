@@ -1,23 +1,30 @@
 package validators
 
 import (
-	"github.com/AlekSi/pointer"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator/meta"
-	"gopkg.in/guregu/null.v3/zero"
 	"net/http"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/core"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/errors"
+	h "github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	math "github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator/meta"
 	"github.com/noah-blockchain/coinExplorer-tools/helpers"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"gopkg.in/guregu/null.v3/zero"
 )
+
+type GetAggregatedValidatorRequest struct {
+	Page    string  `form:"page"     binding:"omitempty,numeric"`
+	Filter  *string `form:"filter"   binding:"omitempty"`
+	OrderBy *string `form:"order_by" binding:"omitempty"`
+}
 
 type GetValidatorRequest struct {
 	PublicKey string `uri:"publicKey"    binding:"required,noahPubKey"`
@@ -28,6 +35,11 @@ type GetValidatorTransactionsRequest struct {
 	Page       string  `form:"page"        binding:"omitempty,numeric"`
 	StartBlock *string `form:"startblock"  binding:"omitempty,numeric"`
 	EndBlock   *string `form:"endblock"    binding:"omitempty,numeric"`
+}
+
+type CacheValidatorsData struct {
+	Validators []models.Validator
+	Pagination tools.Pagination
 }
 
 // cache time
@@ -101,35 +113,35 @@ func GetValidator(c *gin.Context) {
 }
 
 // Get list of validators
-func GetValidators(c *gin.Context) {
-	explorer := c.MustGet("explorer").(*core.Explorer)
-
-	// fetch validators
-	validators := explorer.Cache.Get("validators", func() interface{} {
-		return explorer.ValidatorRepository.GetValidators()
-	}, CacheBlocksCount).([]models.Validator)
-
-	// get array of active validator ids by last block
-	activeValidatorIDs := getActiveValidatorIDs(explorer)
-	// get total stake of active validators
-	totalStake := getTotalStakeByActiveValidators(explorer, activeValidatorIDs)
-
-	// add params to each model resource
-	resourceCallback := func(model resource.ParamInterface) resource.ParamsInterface {
-		return resource.ParamsInterface{validator.Params{
-			TotalStake:          totalStake,
-			ActiveValidatorsIDs: activeValidatorIDs,
-		}}
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"data": resource.TransformCollectionWithCallback(
-			validators,
-			validator.Resource{},
-			resourceCallback,
-		),
-	})
-}
+//func GetValidators(c *gin.Context) {
+//	explorer := c.MustGet("explorer").(*core.Explorer)
+//
+//	// fetch validators
+//	validators := explorer.Cache.Get("validators", func() interface{} {
+//		return explorer.ValidatorRepository.GetValidators()
+//	}, CacheBlocksCount).([]models.Validator)
+//
+//	// get array of active validator ids by last block
+//	activeValidatorIDs := getActiveValidatorIDs(explorer)
+//	// get total stake of active validators
+//	totalStake := getTotalStakeByActiveValidators(explorer, activeValidatorIDs)
+//
+//	// add params to each model resource
+//	resourceCallback := func(model resource.ParamInterface) resource.ParamsInterface {
+//		return resource.ParamsInterface{validator.Params{
+//			TotalStake:          totalStake,
+//			ActiveValidatorsIDs: activeValidatorIDs,
+//		}}
+//	}
+//
+//	c.JSON(http.StatusOK, gin.H{
+//		"data": resource.TransformCollectionWithCallback(
+//			validators,
+//			validator.Resource{},
+//			resourceCallback,
+//		),
+//	})
+//}
 
 // Get IDs of active validators
 func getActiveValidatorIDs(explorer *core.Explorer) []uint64 {
@@ -145,22 +157,60 @@ func getTotalStakeByActiveValidators(explorer *core.Explorer, validators []uint6
 	}, CacheBlocksCount).(string)
 }
 
+func getValidatorsWithPagination(c *gin.Context, req GetAggregatedValidatorRequest, pagination *tools.Pagination) []models.Validator {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+	var data []models.Validator
+
+	var field, orderBy *string
+	if req.Filter != nil && h.IsModelsContain(*req.Filter, []string{
+		"uptime", "total_stake", "commission"}) {
+		field = req.Filter
+	}
+
+	if req.OrderBy != nil && h.IsModelsContain(*req.OrderBy, []string{"ASC", "DESC"}) {
+		orderBy = req.OrderBy
+	}
+
+	getValidators := func() []models.Validator {
+		return explorer.ValidatorRepository.GetValidatorsWithPagination(pagination, field, orderBy)
+	}
+
+	// cache last blocks
+	if pagination.GetCurrentPage() == 1 && pagination.GetPerPage() == tools.DefaultLimit {
+		//cached := explorer.Cache.Get("coins", func() interface{} {
+		//	return CacheCoinsData{getCoins(), pagination}
+		//}, CacheCoinsCount).(CacheCoinsData)
+		cached := CacheValidatorsData{getValidators(), *pagination}
+		data = cached.Validators
+		*pagination = cached.Pagination
+	} else {
+		data = getValidators()
+	}
+
+	return data
+}
+
 func GetAggregatedValidators(c *gin.Context) {
 	explorer := c.MustGet("explorer").(*core.Explorer)
 
-	pagination := tools.NewPagination(c.Request)
+	var request GetAggregatedValidatorRequest
+	err := c.ShouldBindQuery(&request)
+	if err != nil {
+		errors.SetValidationErrorResponse(err, c)
+		return
+	}
 
-	// get array of active validator ids by last block
 	activeValidatorIDs := getActiveValidatorIDs(explorer)
+	totalStakeActiveValidators := getTotalStakeByActiveValidators(explorer, activeValidatorIDs)
 
-	// get total stake of active validators
-	totalStake := getTotalStakeByActiveValidators(explorer, activeValidatorIDs)
-	data := explorer.ValidatorRepository.GetValidatorsWithPagination(&pagination)
+	pagination := tools.NewPagination(c.Request)
+	data := getValidatorsWithPagination(c, request, &pagination)
 
 	resources := make([]validator.ResourceAggregator, len(data))
 	for i, d := range data {
 		resources[i] = validator.ResourceAggregator{
 			PublicKey: d.GetPublicKey(),
+			Status:    d.Status,
 			Meta:      new(meta.Resource).Transform(d),
 			Uptime:    d.Uptime,
 			CreatedAt: d.CreatedAt.Format(time.RFC3339),
@@ -174,7 +224,7 @@ func GetAggregatedValidators(c *gin.Context) {
 			resources[i].Stake = pointer.ToString(math.QNoahStr2Noah(zero.StringFromPtr(d.TotalStake).String))
 		}
 
-		part, _ := validator.GetValidatorPartAndStake(d, totalStake, activeValidatorIDs)
+		part, _ := validator.GetValidatorPartAndStake(d, totalStakeActiveValidators, activeValidatorIDs)
 		resources[i].Part = part
 	}
 

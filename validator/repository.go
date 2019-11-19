@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"fmt"
 	"github.com/go-pg/pg"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/blocks"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
@@ -103,12 +104,36 @@ func (repository Repository) GetValidatorsBySymbol(coinSymbol string, pagination
 	return validators
 }
 
-func (repository Repository) GetValidatorsWithPagination(pagination *tools.Pagination) []models.Validator {
+//func (repository Repository) GetValidatorsWithPagination(pagination *tools.Pagination) []models.Validator {
+//	var validators []models.Validator
+//	var err error
+//
+//	pagination.Total, err = repository.db.Model(&validators).SelectAndCount()
+//
+//	helpers.CheckErr(err)
+//	return validators
+//}
+
+func (repository Repository) GetValidatorsWithPagination(pagination *tools.Pagination, field *string, orderBy *string) []models.Validator {
 	var validators []models.Validator
 	var err error
+	fieldSql := "uptime"
+	orderBySql := "DESC"
 
-	pagination.Total, err = repository.db.Model(&validators).SelectAndCount()
+	if field != nil {
+		fieldSql = *field
+	}
 
+	if orderBy != nil {
+		orderBySql = *orderBy
+	}
+
+	query := repository.db.Model(&validators).
+		Apply(pagination.Filter).
+		Order(fmt.Sprintf("validator.%s %s", fieldSql, orderBySql))
+
+	pagination.Total, err = query.SelectAndCount()
 	helpers.CheckErr(err)
+
 	return validators
 }

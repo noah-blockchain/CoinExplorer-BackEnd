@@ -98,6 +98,7 @@ type ResourceAggregator struct {
 	Part       *string            `json:"part"`
 	Uptime     *float64           `json:"uptime"`
 	Commission uint64             `json:"commission"`
+	Status     *uint8             `json:"status"`
 	CreatedAt  string             `json:"created_at"`
 	Meta       resource.Interface `json:"meta"`
 }
