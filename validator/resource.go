@@ -16,6 +16,7 @@ type Resource struct {
 	Meta           resource.Interface    `json:"meta"`
 	Stake          *string               `json:"stake"`
 	Part           *string               `json:"part"`
+	Uptime         *float64              `json:"uptime"`
 	DelegatorCount *int                  `json:"delegator_count,omitempty"`
 	DelegatorList  *[]resource.Interface `json:"delegator_list,omitempty"`
 }
@@ -29,7 +30,7 @@ type Params struct {
 func (r Resource) Transform(model resource.ItemInterface, values ...resource.ParamInterface) resource.Interface {
 	validator := model.(models.Validator)
 	params := values[0].(Params)
-	part, validatorStake := r.getValidatorPartAndStake(validator, params.TotalStake, params.ActiveValidatorsIDs)
+	part, validatorStake := GetValidatorPartAndStake(validator, params.TotalStake, params.ActiveValidatorsIDs)
 
 	res := Resource{
 		PublicKey: validator.GetPublicKey(),
@@ -47,7 +48,7 @@ func (r Resource) Transform(model resource.ItemInterface, values ...resource.Par
 }
 
 // return validator stake and part of the total (%)
-func (r Resource) getValidatorPartAndStake(validator models.Validator, totalStake string, validators []uint64) (*string, *string) {
+func GetValidatorPartAndStake(validator models.Validator, totalStake string, validators []uint64) (*string, *string) {
 	var part, stakeFull *string
 
 	if helpers.InArray(validator.ID, validators) && validator.TotalStake != nil {
@@ -92,29 +93,28 @@ func (ResourceWithValidators) Transform(model resource.ItemInterface, params ...
 }
 
 type ResourceAggregator struct {
-	Meta       resource.Interface `json:"meta"`
 	PublicKey  string             `json:"public_key"`
 	Stake      *string            `json:"stake"`
+	Part       *string            `json:"part"`
+	Uptime     *float64           `json:"uptime"`
 	Commission uint64             `json:"commission"`
 	CreatedAt  string             `json:"created_at"`
+	Meta       resource.Interface `json:"meta"`
 }
 
 func (ResourceAggregator) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
-	validator := model.(models.Validator)
+	validator := model.(ResourceAggregator)
+	return validator
+	//res := ResourceAggregator{
+	//	PublicKey:  validator.PublicKey,
+	//	Stake:      validator.Stake,
+	//	Meta:       new(meta.Resource).Transform(validator),
+	//	Commission: validator.Commission,
+	//}
 
-	res := ResourceAggregator{
-		PublicKey: validator.PublicKey,
-		Stake:     validator.TotalStake,
-		Meta: new(meta.Resource).Transform(validator),
-	}
+	//if validator.TotalStake != nil {
+	//	res.Stake = pointer.ToString(helpers.QNoahStr2Noah(*validator.TotalStake))
+	//}
 
-	if validator.Commission != nil {
-		res.Commission = *validator.Commission
-	}
-
-	if validator.TotalStake != nil {
-		res.Stake = pointer.ToString(helpers.QNoahStr2Noah(*validator.TotalStake))
-	}
-
-	return res
+	//return res
 }

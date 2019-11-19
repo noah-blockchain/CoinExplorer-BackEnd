@@ -1,12 +1,16 @@
 package validators
 
 import (
+	"github.com/AlekSi/pointer"
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/validator/meta"
+	"gopkg.in/guregu/null.v3/zero"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/core"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/errors"
+	math "github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/tools"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/transaction"
@@ -92,7 +96,6 @@ func GetValidator(c *gin.Context) {
 		"data": validator.Resource{}.Transform(*data, validator.Params{
 			TotalStake:          totalStake,
 			ActiveValidatorsIDs: activeValidatorIDs,
-			//IsDelegatorsRequired: true,
 		}),
 	})
 }
@@ -116,7 +119,6 @@ func GetValidators(c *gin.Context) {
 		return resource.ParamsInterface{validator.Params{
 			TotalStake:          totalStake,
 			ActiveValidatorsIDs: activeValidatorIDs,
-			//IsDelegatorsRequired: false,
 		}}
 	}
 
@@ -143,19 +145,41 @@ func getTotalStakeByActiveValidators(explorer *core.Explorer, validators []uint6
 	}, CacheBlocksCount).(string)
 }
 
-// Get list of validators
-func GetValidatorsFull(c *gin.Context) {
+func GetAggregatedValidators(c *gin.Context) {
 	explorer := c.MustGet("explorer").(*core.Explorer)
 
-	// fetch validators
 	pagination := tools.NewPagination(c.Request)
-	validators := explorer.ValidatorRepository.GetValidatorsWithPagination(&pagination)
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": resource.TransformPaginatedCollection(
-			validators,
-			validator.ResourceAggregator{},
-			pagination,
-		),
-	})
+	// get array of active validator ids by last block
+	activeValidatorIDs := getActiveValidatorIDs(explorer)
+
+	// get total stake of active validators
+	totalStake := getTotalStakeByActiveValidators(explorer, activeValidatorIDs)
+	data := explorer.ValidatorRepository.GetValidatorsWithPagination(&pagination)
+
+	resources := make([]validator.ResourceAggregator, len(data))
+	for i, d := range data {
+		resources[i] = validator.ResourceAggregator{
+			PublicKey: d.PublicKey,
+			Meta:      new(meta.Resource).Transform(d),
+			Uptime:    d.Uptime,
+			CreatedAt: d.CreatedAt.Format(time.RFC3339),
+		}
+
+		if d.Commission != nil {
+			resources[i].Commission = *d.Commission
+		}
+
+		if d.TotalStake != nil {
+			resources[i].Stake = pointer.ToString(math.QNoahStr2Noah(zero.StringFromPtr(d.TotalStake).String))
+		}
+
+		part, _ := validator.GetValidatorPartAndStake(d, totalStake, activeValidatorIDs)
+		resources[i].Part = part
+	}
+
+	// add params to each model resource
+	c.JSON(http.StatusOK,
+		resource.TransformPaginatedCollection(resources, validator.ResourceAggregator{}, pagination),
+	)
 }
