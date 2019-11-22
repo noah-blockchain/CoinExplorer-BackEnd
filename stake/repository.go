@@ -96,7 +96,7 @@ func (repository Repository) GetPaginatedDelegatorsForValidator(pubKey string, p
 		Join("LEFT JOIN validators as v").
 		JoinOn("v.id = stake.validator_id").
 		Where("v.public_key = ?", pubKey).
-		Column("OwnerAddress.address").
+		Column("OwnerAddress.address", "Coin.symbol").
 		Column("value", "noah_value").
 		Apply(pagination.Filter).
 		SelectAndCount()

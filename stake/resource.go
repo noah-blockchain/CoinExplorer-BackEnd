@@ -44,6 +44,7 @@ func (ResourceStakeDelegation) Transform(model resource.ItemInterface, params ..
 
 type ResourceDelegatorsForValidator struct {
 	Address   string `json:"address"`
+	Symbol    string `json:"symbol"`
 	Value     string `json:"value"`
 	NoahValue string `json:"noah_value"`
 }
@@ -53,6 +54,7 @@ func (ResourceDelegatorsForValidator) Transform(model resource.ItemInterface, pa
 
 	return ResourceDelegatorsForValidator{
 		Address:   stake.OwnerAddress.GetAddress(),
+		Symbol:    stake.Coin.Symbol,
 		Value:     helpers.QNoahStr2Noah(stake.Value),
 		NoahValue: helpers.QNoahStr2Noah(stake.NoahValue),
 	}
