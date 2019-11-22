@@ -1,6 +1,7 @@
 package validators
 
 import (
+	"github.com/noah-blockchain/CoinExplorer-BackEnd/stake"
 	"net/http"
 	"time"
 
@@ -112,37 +113,6 @@ func GetValidator(c *gin.Context) {
 	})
 }
 
-// Get list of validators
-//func GetValidators(c *gin.Context) {
-//	explorer := c.MustGet("explorer").(*core.Explorer)
-//
-//	// fetch validators
-//	validators := explorer.Cache.Get("validators", func() interface{} {
-//		return explorer.ValidatorRepository.GetValidators()
-//	}, CacheBlocksCount).([]models.Validator)
-//
-//	// get array of active validator ids by last block
-//	activeValidatorIDs := getActiveValidatorIDs(explorer)
-//	// get total stake of active validators
-//	totalStake := getTotalStakeByActiveValidators(explorer, activeValidatorIDs)
-//
-//	// add params to each model resource
-//	resourceCallback := func(model resource.ParamInterface) resource.ParamsInterface {
-//		return resource.ParamsInterface{validator.Params{
-//			TotalStake:          totalStake,
-//			ActiveValidatorsIDs: activeValidatorIDs,
-//		}}
-//	}
-//
-//	c.JSON(http.StatusOK, gin.H{
-//		"data": resource.TransformCollectionWithCallback(
-//			validators,
-//			validator.Resource{},
-//			resourceCallback,
-//		),
-//	})
-//}
-
 // Get IDs of active validators
 func getActiveValidatorIDs(explorer *core.Explorer) []uint64 {
 	return explorer.Cache.Get("active_validators", func() interface{} {
@@ -163,7 +133,7 @@ func getValidatorsWithPagination(c *gin.Context, req GetAggregatedValidatorReque
 
 	var field, orderBy *string
 	if req.Filter != nil && h.IsModelsContain(*req.Filter, []string{
-		"uptime", "total_stake", "commission"}) {
+		"uptime", "total_stake", "commission", "count_delegators"}) {
 		field = req.Filter
 	}
 
@@ -209,11 +179,12 @@ func GetAggregatedValidators(c *gin.Context) {
 	resources := make([]validator.ResourceAggregator, len(data))
 	for i, d := range data {
 		resources[i] = validator.ResourceAggregator{
-			PublicKey: d.GetPublicKey(),
-			Status:    d.Status,
-			Meta:      new(meta.Resource).Transform(d),
-			Uptime:    d.Uptime,
-			CreatedAt: d.CreatedAt.Format(time.RFC3339),
+			PublicKey:       d.GetPublicKey(),
+			Status:          d.Status,
+			Meta:            new(meta.Resource).Transform(d),
+			Uptime:          d.Uptime,
+			CreatedAt:       d.CreatedAt.Format(time.RFC3339),
+			CountDelegators: d.CountDelegators,
 		}
 
 		if d.Commission != nil {
@@ -231,5 +202,32 @@ func GetAggregatedValidators(c *gin.Context) {
 	// add params to each model resource
 	c.JSON(http.StatusOK,
 		resource.TransformPaginatedCollection(resources, validator.ResourceAggregator{}, pagination),
+	)
+}
+
+// Get validator detail by public key
+func GetDelegators(c *gin.Context) {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+
+	// validate request
+	// validate request
+	var request GetValidatorRequest
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		errors.SetValidationErrorResponse(err, c)
+		return
+	}
+
+	pagination := tools.NewPagination(c.Request)
+	data := explorer.StakeRepository.GetPaginatedDelegatorsForValidator(helpers.RemovePrefix(request.PublicKey), &pagination)
+
+	// check validator to existing
+	if data == nil {
+		errors.SetErrorResponse(http.StatusNotFound, http.StatusNotFound, "Validator not found.", c)
+		return
+	}
+
+	c.JSON(http.StatusOK,
+		resource.TransformPaginatedCollection(data, stake.ResourceDelegatorsForValidator{}, pagination),
 	)
 }

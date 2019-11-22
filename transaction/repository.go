@@ -134,7 +134,7 @@ func (repository Repository) GetPaginatedTxsByCoin(coinSymbol string, pagination
 	pagination.Total, err = repository.db.Model(&transactionOutputs).
 		Join("LEFT JOIN coins as c").
 		JoinOn("c.id = transaction_output.coin_id").
-		JoinOn("c.symbol = ?", coinSymbol).
+		Where("c.symbol=?", coinSymbol).
 		Column("Transaction", "transaction_output.value",
 			"Transaction.FromAddress", "Transaction.GasCoin").
 		Apply(pagination.Filter).

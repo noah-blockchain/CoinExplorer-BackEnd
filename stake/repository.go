@@ -76,7 +76,7 @@ func (repository Repository) GetPaginatedStakeForCoin(coinSymbol string, paginat
 	pagination.Total, err = repository.db.Model(&stakes).
 		Join("LEFT JOIN coins as c").
 		JoinOn("c.id = stake.coin_id").
-		JoinOn("c.symbol = ?", coinSymbol).
+		Where("c.symbol = ?", coinSymbol).
 		Column("Validator.public_key", "OwnerAddress.address").
 		Column("value", "noah_value").
 		Apply(pagination.Filter).
@@ -85,4 +85,22 @@ func (repository Repository) GetPaginatedStakeForCoin(coinSymbol string, paginat
 	helpers.CheckErr(err)
 
 	return stakes
+}
+
+// Get paginated list of delegators by validator pubKey
+func (repository Repository) GetPaginatedDelegatorsForValidator(pubKey string, pagination *tools.Pagination) []models.Stake {
+	var stakeDelegators []models.Stake
+	var err error
+
+	pagination.Total, err = repository.db.Model(&stakeDelegators).
+		Join("LEFT JOIN validators as v").
+		JoinOn("v.id = stake.validator_id").
+		Where("v.public_key = ?", pubKey).
+		Column("OwnerAddress.address").
+		Column("value", "noah_value").
+		Apply(pagination.Filter).
+		SelectAndCount()
+
+	helpers.CheckErr(err)
+	return stakeDelegators
 }

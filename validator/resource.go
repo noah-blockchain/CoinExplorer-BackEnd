@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"github.com/AlekSi/pointer"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/helpers"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/resource"
 	"github.com/noah-blockchain/CoinExplorer-BackEnd/stake"
@@ -11,14 +10,16 @@ import (
 )
 
 type Resource struct {
-	PublicKey      string                `json:"public_key"`
-	Status         *uint8                `json:"status"`
-	Meta           resource.Interface    `json:"meta"`
-	Stake          *string               `json:"stake"`
-	Part           *string               `json:"part"`
-	Uptime         *float64              `json:"uptime"`
-	DelegatorCount *int                  `json:"delegator_count,omitempty"`
-	DelegatorList  *[]resource.Interface `json:"delegator_list,omitempty"`
+	PublicKey       string                `json:"public_key"`
+	Status          *uint8                `json:"status"`
+	Meta            resource.Interface    `json:"meta"`
+	Stake           *string               `json:"stake"`
+	Commission      uint64                `json:"commission"`
+	Part            *string               `json:"part"`
+	Uptime          *float64              `json:"uptime"`
+	CountDelegators *uint64               `json:"count_delegators"`
+	DelegatorCount  *int                  `json:"delegator_count,omitempty"`
+	DelegatorList   *[]resource.Interface `json:"delegator_list,omitempty"`
 }
 
 type Params struct {
@@ -33,15 +34,17 @@ func (r Resource) Transform(model resource.ItemInterface, values ...resource.Par
 	part, validatorStake := GetValidatorPartAndStake(validator, params.TotalStake, params.ActiveValidatorsIDs)
 
 	res := Resource{
-		PublicKey: validator.GetPublicKey(),
-		Status:    validator.Status,
-		Stake:     validatorStake,
-		Part:      part,
-		Meta:      new(meta.Resource).Transform(validator),
+		PublicKey:       validator.GetPublicKey(),
+		Status:          validator.Status,
+		Stake:           validatorStake,
+		Part:            part,
+		Uptime:          validator.Uptime,
+		Meta:            new(meta.Resource).Transform(validator),
+		CountDelegators: validator.CountDelegators,
 	}
 
-	if validator.TotalStake != nil {
-		res.Stake = pointer.ToString(helpers.QNoahStr2Noah(*validator.TotalStake))
+	if validator.Commission != nil {
+		res.Commission = *validator.Commission
 	}
 
 	return res
@@ -93,29 +96,18 @@ func (ResourceWithValidators) Transform(model resource.ItemInterface, params ...
 }
 
 type ResourceAggregator struct {
-	PublicKey  string             `json:"public_key"`
-	Stake      *string            `json:"stake"`
-	Part       *string            `json:"part"`
-	Uptime     *float64           `json:"uptime"`
-	Commission uint64             `json:"commission"`
-	Status     *uint8             `json:"status"`
-	CreatedAt  string             `json:"created_at"`
-	Meta       resource.Interface `json:"meta"`
+	PublicKey       string             `json:"public_key"`
+	Stake           *string            `json:"stake"`
+	Part            *string            `json:"part"`
+	Uptime          *float64           `json:"uptime"`
+	Commission      uint64             `json:"commission"`
+	Status          *uint8             `json:"status"`
+	CreatedAt       string             `json:"created_at"`
+	CountDelegators *uint64            `json:"count_delegators"`
+	Meta            resource.Interface `json:"meta"`
 }
 
 func (ResourceAggregator) Transform(model resource.ItemInterface, params ...resource.ParamInterface) resource.Interface {
 	validator := model.(ResourceAggregator)
 	return validator
-	//res := ResourceAggregator{
-	//	PublicKey:  validator.PublicKey,
-	//	Stake:      validator.Stake,
-	//	Meta:       new(meta.Resource).Transform(validator),
-	//	Commission: validator.Commission,
-	//}
-
-	//if validator.TotalStake != nil {
-	//	res.Stake = pointer.ToString(helpers.QNoahStr2Noah(*validator.TotalStake))
-	//}
-
-	//return res
 }
