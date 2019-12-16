@@ -1,4 +1,4 @@
-module github.com/noah-blockchain/CoinExplorer-BackEnd
+module github.com/noah-blockchain/noah-explorer-api
 
 go 1.12
 
@@ -9,10 +9,8 @@ replace (
 
 require (
 	github.com/AlekSi/pointer v1.1.0
-	github.com/centrifugal/centrifuge-go v0.2.3
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.4.0
-	github.com/go-pg/migrations v6.7.3+incompatible
 	github.com/go-pg/pg v8.0.5+incompatible
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
