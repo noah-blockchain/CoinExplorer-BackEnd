@@ -6,10 +6,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/transaction/data_resources"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-api/internal/transaction/data_resources"
 )
 
 type Resource struct {

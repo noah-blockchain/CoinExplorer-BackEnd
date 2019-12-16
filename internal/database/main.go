@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-pg/pg"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/core"
+	"github.com/noah-blockchain/noah-explorer-api/internal/core"
 )
 
 func Connect(env *core.Environment) *pg.DB {

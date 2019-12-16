@@ -1,9 +1,9 @@
 package data_resources
 
 import (
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
 )
 
 type SellCoin struct {

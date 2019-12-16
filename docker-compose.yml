@@ -16,10 +16,10 @@ services:
     volumes:
       - app-db-data:/var/lib/postgresql/data
 
-  coin-explorer:
+  noah-explorer-api:
     build:
       context: .
-    container_name: coin-explorer
+    container_name: noah-explorer-api
     environment:
       DB_PORT: 5432
       DB_HOST: db

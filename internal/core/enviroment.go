@@ -6,28 +6,28 @@ import (
 )
 
 type Environment struct {
-	DbName          string
-	DbUser          string
-	DbPassword      string
-	DbPoolSize      int
-	DbHost          string
-	DbPort          int
-	BaseCoin        string
-	ServerPort      int
-	IsDebug         bool
+	DbName     string
+	DbUser     string
+	DbPassword string
+	DbPoolSize int
+	DbHost     string
+	DbPort     int
+	BaseCoin   string
+	ServerPort int
+	IsDebug    bool
 }
 
 func NewEnvironment() *Environment {
 	env := Environment{
-		DbName:          os.Getenv("DB_NAME"),
-		DbUser:          os.Getenv("DB_USER"),
-		DbPassword:      os.Getenv("DB_PASSWORD"),
-		DbPoolSize:      getEnvAsInt("DB_POOL_SIZE", 10),
-		DbHost:          os.Getenv("DB_HOST"),
-		DbPort:          getEnvAsInt("DB_PORT", 5432),
-		BaseCoin:        getEnv("BASE_COIN", "NOAH"),
-		ServerPort:      getEnvAsInt("COIN_EXPLORER_API_PORT", 9070),
-		IsDebug:         getEnvAsBool("DEBUG", true),
+		DbName:     os.Getenv("DB_NAME"),
+		DbUser:     os.Getenv("DB_USER"),
+		DbPassword: os.Getenv("DB_PASSWORD"),
+		DbPoolSize: getEnvAsInt("DB_POOL_SIZE", 10),
+		DbHost:     os.Getenv("DB_HOST"),
+		DbPort:     getEnvAsInt("DB_PORT", 5432),
+		BaseCoin:   getEnv("BASE_COIN", "NOAH"),
+		ServerPort: getEnvAsInt("COIN_EXPLORER_API_PORT", 9070),
+		IsDebug:    getEnvAsBool("DEBUG", true),
 	}
 
 	return &env

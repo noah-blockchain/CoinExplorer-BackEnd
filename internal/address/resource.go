@@ -1,9 +1,9 @@
 package address
 
 import (
-	"github.com/noah-blockchain/noah-explorer-extender/internal/balance"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/balance"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
 )
 
 type Resource struct {

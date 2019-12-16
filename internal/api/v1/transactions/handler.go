@@ -5,15 +5,15 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/blocks"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/core"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/errors"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/invalid_transaction"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/tools"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/transaction"
 	"github.com/noah-blockchain/coinExplorer-tools/helpers"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/blocks"
+	"github.com/noah-blockchain/noah-explorer-api/internal/core"
+	"github.com/noah-blockchain/noah-explorer-api/internal/errors"
+	"github.com/noah-blockchain/noah-explorer-api/internal/invalid_transaction"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-api/internal/tools"
+	"github.com/noah-blockchain/noah-explorer-api/internal/transaction"
 )
 
 // TODO: replace string in StartBlock, EndBlock, Page to int

@@ -2,16 +2,16 @@ package core
 
 import (
 	"github.com/go-pg/pg"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/address"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/blocks"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/coins"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/invalid_transaction"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/reward"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/slash"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/stake"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/tools/cache"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/transaction"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/validator"
+	"github.com/noah-blockchain/noah-explorer-api/internal/address"
+	"github.com/noah-blockchain/noah-explorer-api/internal/blocks"
+	"github.com/noah-blockchain/noah-explorer-api/internal/coins"
+	"github.com/noah-blockchain/noah-explorer-api/internal/invalid_transaction"
+	"github.com/noah-blockchain/noah-explorer-api/internal/reward"
+	"github.com/noah-blockchain/noah-explorer-api/internal/slash"
+	"github.com/noah-blockchain/noah-explorer-api/internal/stake"
+	"github.com/noah-blockchain/noah-explorer-api/internal/tools/cache"
+	"github.com/noah-blockchain/noah-explorer-api/internal/transaction"
+	"github.com/noah-blockchain/noah-explorer-api/internal/validator"
 )
 
 type Explorer struct {

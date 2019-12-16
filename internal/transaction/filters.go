@@ -2,7 +2,7 @@ package transaction
 
 import (
 	"github.com/go-pg/pg/orm"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/blocks"
+	"github.com/noah-blockchain/noah-explorer-api/internal/blocks"
 )
 
 // TODO: replace string in StartBlock, EndBlock to int

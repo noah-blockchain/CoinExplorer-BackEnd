@@ -3,10 +3,10 @@ package slash
 import (
 	"time"
 
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
-	validatorMeta "github.com/noah-blockchain/noah-explorer-extender/internal/validator/meta"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
+	validatorMeta "github.com/noah-blockchain/noah-explorer-api/internal/validator/meta"
 )
 
 type Resource struct {

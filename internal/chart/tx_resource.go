@@ -3,8 +3,8 @@ package chart
 import (
 	"time"
 
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/transaction"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-api/internal/transaction"
 )
 
 type TransactionResource struct {

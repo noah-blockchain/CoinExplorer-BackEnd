@@ -4,17 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/balance"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/coins"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/core"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/errors"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/stake"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/tools"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/transaction"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/validator"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/balance"
+	"github.com/noah-blockchain/noah-explorer-api/internal/coins"
+	"github.com/noah-blockchain/noah-explorer-api/internal/core"
+	"github.com/noah-blockchain/noah-explorer-api/internal/errors"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-api/internal/stake"
+	"github.com/noah-blockchain/noah-explorer-api/internal/tools"
+	"github.com/noah-blockchain/noah-explorer-api/internal/transaction"
+	"github.com/noah-blockchain/noah-explorer-api/internal/validator"
 )
 
 //const CacheCoinsCount = time.Duration(15)

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/noah-blockchain/noah-explorer-extender/internal/api"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/core"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/database"
+	"github.com/noah-blockchain/noah-explorer-api/internal/api"
+	"github.com/noah-blockchain/noah-explorer-api/internal/core"
+	"github.com/noah-blockchain/noah-explorer-api/internal/database"
 )
 
 func main() {

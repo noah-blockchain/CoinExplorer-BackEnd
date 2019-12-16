@@ -3,9 +3,9 @@ package chart
 import (
 	"time"
 
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/reward"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-api/internal/reward"
 )
 
 type RewardResource struct {

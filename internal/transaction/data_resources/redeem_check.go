@@ -3,9 +3,9 @@ package data_resources
 import (
 	"encoding/base64"
 
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
 	"github.com/noah-blockchain/noah-go-node/core/check"
 )
 

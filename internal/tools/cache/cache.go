@@ -6,13 +6,13 @@ import (
 )
 
 type ExplorerCache struct {
-	items       *sync.Map
+	items *sync.Map
 }
 
 // cache constructor
 func NewCache() *ExplorerCache {
 	cache := &ExplorerCache{
-		items:       new(sync.Map),
+		items: new(sync.Map),
 	}
 
 	return cache
@@ -71,4 +71,3 @@ func (c *ExplorerCache) ExpirationCheck() {
 //	// update last block id
 //	c.SetBlockId(block.ID)
 //}
-

@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/go-pg/pg"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/tools"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/tools"
 )
 
 type Repository struct {

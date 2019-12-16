@@ -12,6 +12,7 @@ var feeDefaultMultiplier = big.NewInt(1000000000000000)
 
 // default amount of unit in one noah
 const unitInNoah = 1000
+
 func QNoahStr2Noah(value string) string {
 	if value == "" {
 		return "0"

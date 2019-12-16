@@ -1,11 +1,11 @@
 package validator
 
 import (
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/stake"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/validator/meta"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-api/internal/stake"
+	"github.com/noah-blockchain/noah-explorer-api/internal/validator/meta"
 	"gopkg.in/guregu/null.v3/zero"
 )
 

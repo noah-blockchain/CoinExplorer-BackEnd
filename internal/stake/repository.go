@@ -2,9 +2,9 @@ package stake
 
 import (
 	"github.com/go-pg/pg"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
-	"github.com/noah-blockchain/noah-explorer-extender/internal/tools"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
+	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-api/internal/tools"
 )
 
 type Repository struct {
@@ -65,7 +65,6 @@ func (repository Repository) GetSumInNoahValueByAddress(address string) (string,
 
 	return sum, err
 }
-
 
 // Get paginated list of stakes by Noah address
 func (repository Repository) GetPaginatedStakeForCoin(coinSymbol string, pagination *tools.Pagination) []models.Stake {
