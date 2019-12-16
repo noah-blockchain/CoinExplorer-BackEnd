@@ -1,9 +1,9 @@
 package delegation
 
 import (
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/helpers"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/resource"
-	validatorMeta "github.com/noah-blockchain/CoinExplorer-BackEnd/internal/validator/meta"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
+	validatorMeta "github.com/noah-blockchain/noah-explorer-extender/internal/validator/meta"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 

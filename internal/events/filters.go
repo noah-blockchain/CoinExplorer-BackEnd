@@ -2,7 +2,7 @@ package events
 
 import (
 	"github.com/go-pg/pg/orm"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/blocks"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/blocks"
 )
 
 type SelectFilter struct {

@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/go-pg/pg"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/aggregated_reward"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/events"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/helpers"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/tools"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/aggregated_reward"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/events"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/tools"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 

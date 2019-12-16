@@ -1,8 +1,8 @@
 package balance
 
 import (
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/helpers"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 

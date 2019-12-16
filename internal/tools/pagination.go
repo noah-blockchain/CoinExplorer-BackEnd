@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-pg/pg/orm"
 	"github.com/go-pg/pg/urlvalues"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/core/config"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/core/config"
 )
 
 type Pagination struct {

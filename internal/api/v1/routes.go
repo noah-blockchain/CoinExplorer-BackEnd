@@ -2,13 +2,13 @@ package apiV1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/api/v1/addresses"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/api/v1/blocks"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/api/v1/coins"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/api/v1/statistics"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/api/v1/status"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/api/v1/transactions"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/api/v1/validators"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/api/v1/addresses"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/api/v1/blocks"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/api/v1/coins"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/api/v1/statistics"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/api/v1/status"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/api/v1/transactions"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/api/v1/validators"
 )
 
 // ApplyRoutes applies router to the gin Engine

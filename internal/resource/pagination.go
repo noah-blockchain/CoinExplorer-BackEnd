@@ -1,7 +1,7 @@
 package resource
 
 import (
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/tools"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/tools"
 )
 
 type PaginationResource struct {

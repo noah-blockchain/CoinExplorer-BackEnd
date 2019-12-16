@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/chart"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/core"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/core/config"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/errors"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/helpers"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/chart"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/core"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/core/config"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/errors"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
 )
 
 type GetTransactionsRequest struct {

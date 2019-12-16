@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/helpers"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/resource"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/transaction/data_resources"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/transaction/data_resources"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 

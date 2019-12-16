@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/go-pg/pg"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/core/config"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/helpers"
-	"github.com/noah-blockchain/CoinExplorer-BackEnd/internal/tools"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/core/config"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/helpers"
+	"github.com/noah-blockchain/noah-explorer-extender/internal/tools"
 	"github.com/noah-blockchain/coinExplorer-tools/models"
 )
 
