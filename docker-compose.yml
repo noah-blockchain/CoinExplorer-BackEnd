@@ -1,17 +1,33 @@
 version: '3.6'
 
 volumes:
-  app-db-data3:
+  app-db-data:
 
 services:
   db:
-    image: postgres:9.5.14
+    image: postgres:11.6
     restart: always
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
-      POSTGRES_DB: coin_explorer
+      POSTGRES_DB: coin_explorer_new
       POSTGRES_USER: noah
       POSTGRES_PASSWORD: password
     volumes:
-      - app-db-data3:/var/lib/postgresql/data
+      - app-db-data:/var/lib/postgresql/data
+
+  coin-explorer:
+    build:
+      context: .
+    container_name: coin-explorer
+    environment:
+      DB_PORT: 5432
+      DB_HOST: db
+      DB_USER: noah
+      DB_PASSWORD: password
+      DB_NAME: coin_explorer_new
+      BASE_COIN: NOAH
+      COIN_EXPLORER_API_PORT: 9070
+      DEBUG: "true"
+    depends_on:
+      - db
