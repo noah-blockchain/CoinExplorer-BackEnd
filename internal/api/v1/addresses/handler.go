@@ -45,6 +45,19 @@ type AggregatedRewardsQueryRequest struct {
 	EndTime   *string `form:"endTime"   binding:"omitempty,timestamp"`
 }
 
+//Get list of addresses ranked by balance
+func GetTopAddresses(c *gin.Context) {
+	explorer := c.MustGet("explorer").(*core.Explorer)
+
+	//fetch address
+	addresses := explorer.AddressRepository.GetAllAddresses()
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": address.ResourceTopAddresses{}.Transform(addresses),
+	})
+
+}
+
 // Get list of addresses
 func GetAddresses(c *gin.Context) {
 	explorer := c.MustGet("explorer").(*core.Explorer)

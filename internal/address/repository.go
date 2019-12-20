@@ -17,6 +17,17 @@ func NewRepository(db *pg.DB) *Repository {
 	}
 }
 
+//Get all address model
+func (repository Repository) GetAllAddresses() []models.Address {
+	var addresses []models.Address
+
+	err := repository.DB.Model(&addresses).Column("Balances", "Balances.Coin").Select()
+
+	helpers.CheckErr(err)
+
+	return addresses
+}
+
 // Get address model by address
 func (repository Repository) GetByAddress(noahAddress string) *models.Address {
 	var address models.Address

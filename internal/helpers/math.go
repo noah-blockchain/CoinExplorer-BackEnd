@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const precision = 100
+
 // default amount of qNoahs in 1 Noah
 var qNoahInNoah = big.NewFloat(1000000000000000000)
 var feeDefaultMultiplier = big.NewInt(1000000000000000)
@@ -70,4 +72,16 @@ func ConvertCapitalizationQNoahToNoah(value string) string {
 	var twiceQNoahToNoah = big.NewFloat(1000000000000000000000000000000000000)
 	floatValue, _ := new(big.Float).SetPrec(500).SetString(value)
 	return new(big.Float).SetPrec(500).Quo(floatValue, twiceQNoahToNoah).Text('f', 18)
+}
+
+func GetPrice(valueStr string, priceStr string) *big.Float {
+	tVolume, _ := NewFloat(0, precision).SetString(valueStr)
+	tPrice, _ := NewFloat(0, precision).SetString(priceStr)
+	tVolume.Mul(tVolume, tPrice)
+
+	return tVolume
+}
+
+func NewFloat(x float64, precision uint) *big.Float {
+	return big.NewFloat(x).SetPrec(precision)
 }
