@@ -5,8 +5,10 @@ import "github.com/gin-gonic/gin"
 // ApplyRoutes applies router to the gin Engine
 func ApplyRoutes(r *gin.RouterGroup) {
 	addresses := r.Group("/addresses")
+	top := r.Group("/addresses-top")
 	{
 		addresses.GET("", GetAddresses)
+		top.GET("", GetTopAddresses)
 		addresses.GET("/:address", GetAddress)
 		addresses.GET("/:address/transactions", GetTransactions)
 		addresses.GET("/:address/events/rewards", GetRewards)
