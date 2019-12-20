@@ -43,7 +43,7 @@ func (repository *Repository) GetCustomCoinsStatusData() (CustomCoinsStatusData,
 func (repository Repository) GetPaginated(pagination *tools.Pagination, field *string, orderBy *string, symbol *string) []models.Coin {
 	var coins []models.Coin
 	var err error
-	fieldSql := "reserve_balance"
+	fieldSql := "id"
 	orderBySql := "DESC"
 
 	if field != nil {
