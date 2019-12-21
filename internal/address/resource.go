@@ -9,6 +9,8 @@ import (
 	"sort"
 )
 
+const precision = 100
+
 type Resource struct {
 	Address  string               `json:"address"`
 	Balances []resource.Interface `json:"balances"`
@@ -24,8 +26,8 @@ type ByBalance []ResourceTopAddresses
 func (a ByBalance) Len() int { return len(a) }
 
 func (a ByBalance) Less(i, j int) bool {
-	x, _ := helpers.NewFloat(0, 100).SetString(a[i].Balance)
-	y, _ := helpers.NewFloat(0, 100).SetString(a[j].Balance)
+	x, _ := helpers.NewFloat(0, precision).SetString(a[i].Balance)
+	y, _ := helpers.NewFloat(0, precision).SetString(a[j].Balance)
 	return x.Cmp(y) == 1
 }
 
@@ -48,19 +50,19 @@ func (r ResourceTopAddresses) Transform(model resource.ItemInterface, resourcePa
 func (r ResourceTopAddresses) TransformCollection(model []models.Address, pagination tools.Pagination) resource.PaginationResource {
 	top := make([]ResourceTopAddresses, len(model))
 	for i, address := range model {
-		balans := helpers.NewFloat(0, 100)
+		uBalance := helpers.NewFloat(0, precision)
 		for _, b := range address.Balances {
 			if b.Coin.Symbol == "NOAH" {
-				amount, _ := helpers.NewFloat(0, 100).SetString(b.Value)
-				balans.Add(balans, amount)
+				amount, _ := helpers.NewFloat(0, precision).SetString(b.Value)
+				uBalance.Add(uBalance, amount)
 			} else {
 				price := helpers.GetPrice(b.Value, b.Coin.Price)
-				balans.Add(balans, price)
+				uBalance.Add(uBalance, price)
 			}
 		}
 		result := ResourceTopAddresses{
 			Address: address.GetAddress(),
-			Balance: balans.String(),
+			Balance: uBalance.String(),
 		}
 		top[i] = result
 	}
