@@ -17,11 +17,15 @@ func NewRepository(db *pg.DB) *Repository {
 	}
 }
 
-//Get all address model
-func (repository Repository) GetAllAddresses() []models.Address {
+//Get paginated list of addresses
+func (repository Repository) GetPaginatedAddresses(pagination *tools.Pagination) []models.Address {
 	var addresses []models.Address
+	var err error
 
-	err := repository.DB.Model(&addresses).Column("Balances", "Balances.Coin").Select()
+	pagination.Total, err = repository.DB.Model(&addresses).
+		Column("Balances", "Balances.Coin").
+		Apply(pagination.Filter).
+		SelectAndCount()
 
 	helpers.CheckErr(err)
 

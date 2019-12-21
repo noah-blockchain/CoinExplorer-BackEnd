@@ -5,6 +5,7 @@ import (
 	"github.com/noah-blockchain/noah-explorer-api/internal/balance"
 	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
 	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
+	"github.com/noah-blockchain/noah-explorer-api/internal/tools"
 	"sort"
 )
 
@@ -40,7 +41,11 @@ func (r Resource) Transform(model resource.ItemInterface, resourceParams ...reso
 	return result
 }
 
-func (r ResourceTopAddresses) Transform(model []models.Address) []ResourceTopAddresses {
+func (r ResourceTopAddresses) Transform(model resource.ItemInterface, resourceParams ...resource.ParamInterface) resource.Interface {
+	return nil
+}
+
+func (r ResourceTopAddresses) TransformCollection(model []models.Address, pagination tools.Pagination) resource.PaginationResource {
 	top := make([]ResourceTopAddresses, len(model))
 	for i, address := range model {
 		balans := helpers.NewFloat(0, 100)
@@ -59,6 +64,29 @@ func (r ResourceTopAddresses) Transform(model []models.Address) []ResourceTopAdd
 		}
 		top[i] = result
 	}
+
 	sort.Sort(ByBalance(top))
-	return top
+	result := make([]resource.Interface, len(top))
+	for i, v := range top {
+		result[i] = v
+	}
+
+	return resource.PaginationResource{
+		Data: result,
+		Links: resource.PaginationLinksResource{
+			First: pagination.GetFirstPageLink(),
+			Last:  pagination.GetLastPageLink(),
+			Prev:  pagination.GetPrevPageLink(),
+			Next:  pagination.GetNextPageLink(),
+		},
+		Meta: resource.PaginationMetaResource{
+			CurrentPage: pagination.GetCurrentPage(),
+			LastPage:    pagination.GetLastPage(),
+			Path:        pagination.GetPath(),
+			PerPage:     pagination.GetPerPage(),
+			Total:       pagination.Total,
+			Additional:  nil,
+		},
+	}
+
 }
