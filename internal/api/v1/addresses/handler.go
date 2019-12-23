@@ -50,10 +50,11 @@ func GetTopAddresses(c *gin.Context) {
 	explorer := c.MustGet("explorer").(*core.Explorer)
 
 	//fetch address
-	addresses := explorer.AddressRepository.GetAllAddresses()
+	pagination := tools.NewPagination(c.Request)
+	addresses := explorer.AddressRepository.GetPaginatedAddresses(&pagination)
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": address.ResourceTopAddresses{}.Transform(addresses),
+		"data": address.ResourceTopAddresses{}.TransformCollection(addresses, pagination),
 	})
 
 }
