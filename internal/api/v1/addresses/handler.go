@@ -236,25 +236,28 @@ func GetDelegations(c *gin.Context) {
 
 	stakes := explorer.StakeRepository.GetPaginatedByAddress(*noahAddress, &pagination)
 	delegatedStakeList := make([]delegation.Resource, len(stakes))
-
 	for i, stake := range stakes {
-		//// get sum reward validator from time created >= stake.created_at
-		sumReward := explorer.RewardRepository.GetSumRewardForValidator(stake.Validator.ID, stake.CreatedAt)
-		sumRewardBigFloat, _ := helpers.NewFloat(0, precision).SetString(sumReward)
 
-		//// ((sum_reward-(sum_reward * commission_validator_%)) * stake_%) = profit
-		validatorsMoney := helpers.NewFloat(0, precision)
-		validatorsMoney = validatorsMoney.Mul(sumRewardBigFloat, big.NewFloat(float64(*stake.Validator.Commission)/100))
+		yourMoney := helpers.NewFloat(0, precision)
+		if *stake.Validator.Commission < 100 {
+			//// get sum reward validator from time created >= stake.created_at
+			sumReward := explorer.RewardRepository.GetSumRewardForValidator(stake.Validator.ID, stake.CreatedAt)
+			sumRewardBigFloat, _ := helpers.NewFloat(0, precision).SetString(sumReward)
 
-		delegationsMoney := validatorsMoney.Sub(sumRewardBigFloat, validatorsMoney)
+			//// ((sum_reward-(sum_reward * commission_validator_%)) * stake_%) = profit
+			validatorsMoney := helpers.NewFloat(0, precision)
+			validatorsMoney = validatorsMoney.Mul(sumRewardBigFloat, big.NewFloat(float64(*stake.Validator.Commission)/100))
 
-		//// get your stake_% from delegations total stake
-		percentYourStake, _ := helpers.NewFloat(0, precision).SetString(stake.NoahValue)
-		percentYourStake = percentYourStake.Mul(percentYourStake, big.NewFloat(100))
-		percentYourStake = percentYourStake.Quo(percentYourStake, delegationsMoney)
+			delegationsMoney := validatorsMoney.Sub(sumRewardBigFloat, validatorsMoney)
 
-		yourMoney := delegationsMoney.Mul(delegationsMoney, percentYourStake)
-		yourMoney = yourMoney.Quo(yourMoney, big.NewFloat(100))
+			//// get your stake_% from delegations total stake
+			percentYourStake, _ := helpers.NewFloat(0, precision).SetString(stake.NoahValue)
+			percentYourStake = percentYourStake.Mul(percentYourStake, big.NewFloat(100))
+			percentYourStake = percentYourStake.Quo(percentYourStake, delegationsMoney)
+
+			yourMoney = delegationsMoney.Mul(delegationsMoney, percentYourStake)
+			yourMoney = yourMoney.Quo(yourMoney, big.NewFloat(100))
+		}
 
 		delegatedStakeList[i] = delegation.Resource{
 			Coin:           stake.Coin.Symbol,
