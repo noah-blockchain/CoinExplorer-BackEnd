@@ -108,3 +108,20 @@ func (repository Repository) GetPaginatedAggregatedByAddress(filter aggregated_r
 
 	return rewards
 }
+
+func (repository Repository) GetSumRewardForValidator(validatorId uint64, createdAt time.Time) string {
+	var total string
+
+	// get total stake of active validators
+	err := repository.db.Model((*models.Reward)(nil)).
+		ColumnExpr("SUM(amount)").
+		Where("role = ?", "Validator").
+		Where("created_at >= ?", createdAt).
+		Where("validator_id = ?", validatorId).
+		Select(&total)
+	if err != nil {
+		return "0"
+	}
+
+	return total
+}
