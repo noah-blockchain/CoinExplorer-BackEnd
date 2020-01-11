@@ -39,9 +39,10 @@ func (repository Repository) GetPaginatedByAddress(address string, pagination *t
 		Column("Coin.symbol", "Validator.id", "Validator.public_key",
 			"Validator.commission", "Validator.total_stake",
 			"Validator.name", "Validator.description",
-			"Validator.icon_url", "Validator.site_url",
-			"OwnerAddress._").
-		Where("owner_address.address = ?", address).
+			"Validator.icon_url", "Validator.site_url").
+		Join("LEFT JOIN addresses as a").
+		JoinOn("a.id = stake.owner_address_id").
+		Where("a.address = ?", address).
 		Apply(pagination.Filter).
 		SelectAndCount()
 
@@ -60,8 +61,8 @@ func (repository Repository) GetSumInNoahValue() (string, error) {
 func (repository Repository) GetSumInNoahValueByAddress(address string) (string, error) {
 	var sum string
 	err := repository.db.Model(&models.Stake{}).
-		Column("OwnerAddress._").
 		ColumnExpr("SUM(noah_value)").
+		Column("OwnerAddress._").
 		Where("owner_address.address = ?", address).
 		Select(&sum)
 

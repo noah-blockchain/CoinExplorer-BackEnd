@@ -1,9 +1,6 @@
 package addresses
 
 import (
-	"fmt"
-	"log"
-	"math/big"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -226,45 +223,43 @@ func GetDelegations(c *gin.Context) {
 
 	pagination := tools.NewPagination(c.Request)
 
-	// get address total delegated sum in base coin
-	stakesSumCh := make(chan helpers.ChannelData)
-	go func(ch chan helpers.ChannelData) {
-		value, err := explorer.StakeRepository.GetSumInNoahValueByAddress(*noahAddress)
-		ch <- helpers.NewChannelData(value, err)
-	}(stakesSumCh)
-
-	stakesSumData := <-stakesSumCh
-	helpers.CheckErr(stakesSumData.Error)
+	stakesSum, err := explorer.StakeRepository.GetSumInNoahValueByAddress(*noahAddress)
+	if err != nil {
+		errors.SetValidationErrorResponse(err, c)
+		return
+	}
 
 	stakes := explorer.StakeRepository.GetPaginatedByAddress(*noahAddress, &pagination)
 	delegatedStakeList := make([]delegation.Resource, len(stakes))
 	for i, stake := range stakes {
 
 		yourMoney := helpers.NewFloat(0, precision)
-		if *stake.Validator.Commission < 100 {
-			fmt.Println(*stake.Validator.Commission)
-			//// get sum reward validator from time created >= stake.created_at
-			sumReward := explorer.RewardRepository.GetSumRewardForValidator(stake.Validator.ID, stake.CreatedAt)
-			sumRewardBigFloat, _ := helpers.NewFloat(0, precision).SetString(sumReward)
-			log.Println("sumReward", sumReward)
-			log.Println("sumRewardFloat", sumRewardBigFloat.String())
-
-			//// ((sum_reward-(sum_reward * commission_validator_%)) * stake_%) = profit
-			validatorsMoney := helpers.NewFloat(0, precision)
-			validatorsMoney = validatorsMoney.Mul(sumRewardBigFloat, big.NewFloat(float64(*stake.Validator.Commission)/100))
-			log.Println("commission", big.NewFloat(float64(*stake.Validator.Commission)/100).String())
-			log.Println("validatorsMoney", validatorsMoney.String())
-			delegationsMoney := validatorsMoney.Sub(sumRewardBigFloat, validatorsMoney)
-			log.Println("delegationsMoney", delegationsMoney.String())
-			//// get your stake_% from delegations total stake
-			percentYourStake, _ := helpers.NewFloat(0, precision).SetString(stake.NoahValue)
-			percentYourStake = percentYourStake.Mul(percentYourStake, big.NewFloat(100))
-			percentYourStake = percentYourStake.Quo(percentYourStake, delegationsMoney)
-			log.Println("percentYourStake", percentYourStake.String())
-
-			yourMoney = delegationsMoney.Mul(delegationsMoney, percentYourStake)
-			yourMoney = yourMoney.Quo(yourMoney, big.NewFloat(100))
-		}
+		//if *stake.Validator.Commission < 100 {
+		//	fmt.Println(*stake.Validator.Commission)
+		//	//// get sum reward validator from time created >= stake.created_at
+		//	sumReward := explorer.RewardRepository.GetSumRewardForValidator(stake.ValidatorID, stake.CreatedAt)
+		//	sumRewardBigFloat, _ := helpers.NewFloat(0, precision).SetString(sumReward)
+		//	log.Println("sumReward", sumReward)
+		//	log.Println("sumRewardFloat", sumRewardBigFloat.String())
+		//
+		//	//// ((sum_reward-(sum_reward * commission_validator_%)) * stake_%) = profit
+		//	validatorsMoney := helpers.NewFloat(0, precision)
+		//	validatorsMoney = validatorsMoney.Mul(sumRewardBigFloat, big.NewFloat(float64(*stake.Validator.Commission)/100))
+		//	log.Println("commission", big.NewFloat(float64(*stake.Validator.Commission)/100).String())
+		//	log.Println("validatorsMoney", validatorsMoney.String())
+		//
+		//	delegationsMoney := validatorsMoney.Sub(sumRewardBigFloat, validatorsMoney)
+		//	log.Println("delegationsMoney", delegationsMoney.String())
+		//
+		//	//// get your stake_% from delegations total stake
+		//	percentYourStake, _ := helpers.NewFloat(0, precision).SetString(stake.NoahValue)
+		//	percentYourStake = percentYourStake.Mul(percentYourStake, big.NewFloat(100))
+		//	percentYourStake = percentYourStake.Quo(percentYourStake, delegationsMoney)
+		//	log.Println("percentYourStake", percentYourStake.String())
+		//
+		//	yourMoney = delegationsMoney.Mul(delegationsMoney, percentYourStake)
+		//	yourMoney = yourMoney.Quo(yourMoney, big.NewFloat(100))
+		//}
 
 		delegatedStakeList[i] = delegation.Resource{
 			Coin:           stake.Coin.Symbol,
@@ -277,9 +272,7 @@ func GetDelegations(c *gin.Context) {
 	}
 
 	additionalFields := map[string]interface{}{
-		"total_delegated_noah_value": helpers.QNoahStr2Noah(
-			stakesSumData.Value.(string),
-		),
+		"total_delegated_noah_value": helpers.QNoahStr2Noah(stakesSum),
 	}
 
 	c.JSON(http.StatusOK, resource.TransformPaginatedCollectionWithAdditionalFields(
