@@ -1,6 +1,8 @@
 package validator
 
 import (
+	"time"
+
 	"github.com/noah-blockchain/coinExplorer-tools/models"
 	"github.com/noah-blockchain/noah-explorer-api/internal/helpers"
 	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
@@ -20,6 +22,7 @@ type Resource struct {
 	CountDelegators *uint64               `json:"count_delegators"`
 	DelegatorCount  *int                  `json:"delegator_count,omitempty"`
 	DelegatorList   *[]resource.Interface `json:"delegator_list,omitempty"`
+	CreatedAt       string                `json:"created_at"`
 }
 
 type Params struct {
@@ -41,6 +44,7 @@ func (r Resource) Transform(model resource.ItemInterface, values ...resource.Par
 		Uptime:          validator.Uptime,
 		Meta:            new(meta.Resource).Transform(validator),
 		CountDelegators: validator.CountDelegators,
+		CreatedAt:       validator.CreatedAt.Format(time.RFC3339),
 	}
 
 	if validator.Commission != nil {

@@ -1,6 +1,7 @@
 package reward
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-pg/pg"
@@ -107,4 +108,23 @@ func (repository Repository) GetPaginatedAggregatedByAddress(filter aggregated_r
 	helpers.CheckErr(err)
 
 	return rewards
+}
+
+func (repository Repository) GetSumRewardForValidator(validatorId uint64, createdAt time.Time) string {
+	var reward models.Reward
+	var total = "0"
+
+	// get total stake of active validators
+	err := repository.db.Model(&reward).
+		ColumnExpr("SUM(amount)").
+		Where("role = ?", "Validator").
+		Where("created_at >= ?", createdAt).
+		Where("validator_id = ?", validatorId).
+		Select(&total)
+	if err != nil {
+		fmt.Println(err)
+		return "0"
+	}
+
+	return total
 }

@@ -36,14 +36,17 @@ func (repository Repository) GetPaginatedByAddress(address string, pagination *t
 	var err error
 
 	pagination.Total, err = repository.db.Model(&stakes).
-		Column("Coin.symbol", "Validator.public_key", "OwnerAddress._").
-		Column("Validator.name", "Validator.description", "Validator.icon_url", "Validator.site_url").
-		Where("owner_address.address = ?", address).
+		Column("Coin.symbol", "Validator.id", "Validator.public_key",
+			"Validator.commission", "Validator.total_stake",
+			"Validator.name", "Validator.description",
+			"Validator.icon_url", "Validator.site_url").
+		Join("LEFT JOIN addresses as a").
+		JoinOn("a.id = stake.owner_address_id").
+		Where("a.address = ?", address).
 		Apply(pagination.Filter).
 		SelectAndCount()
 
 	helpers.CheckErr(err)
-
 	return stakes
 }
 
@@ -58,8 +61,8 @@ func (repository Repository) GetSumInNoahValue() (string, error) {
 func (repository Repository) GetSumInNoahValueByAddress(address string) (string, error) {
 	var sum string
 	err := repository.db.Model(&models.Stake{}).
-		Column("OwnerAddress._").
 		ColumnExpr("SUM(noah_value)").
+		Column("OwnerAddress._").
 		Where("owner_address.address = ?", address).
 		Select(&sum)
 
@@ -100,4 +103,22 @@ func (repository Repository) GetPaginatedDelegatorsForValidator(pubKey string, p
 
 	helpers.CheckErr(err)
 	return stakeDelegators
+}
+
+func (repository Repository) GetStakesForAddress(address string) (*[]models.Stake, error) {
+	var stakes []models.Stake
+	var err error
+
+	_, err = repository.db.Query(&stakes, `
+		SELECT s.noah_value, s.created_at, v.total_stake, v.commission, v.id, v.public_key, c.symbol
+			FROM public.stakes as s 
+			LEFT JOIN public.addresses as a on a.id = s.owner_address_id
+			LEFT JOIN public.coins as c on c.id = s.coin_id
+			LEFT JOIN public.validators as v on v.id = s.validator_id
+			WHERE a.address=? AND v.status=? AND v.commission < 100 AND v.total_stake IS NOT NULL;
+	`, helpers.RemoveNoahPrefix(address), models.ValidatorStatusReady)
+	if err != nil {
+		return nil, err
+	}
+	return &stakes, nil
 }

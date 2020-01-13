@@ -10,7 +10,7 @@ import (
 	"github.com/noah-blockchain/coinExplorer-tools/models"
 	"github.com/noah-blockchain/noah-explorer-api/internal/core"
 	"github.com/noah-blockchain/noah-explorer-api/internal/errors"
-	h "github.com/noah-blockchain/noah-explorer-api/internal/helpers"
+	apiHelper "github.com/noah-blockchain/noah-explorer-api/internal/helpers"
 	"github.com/noah-blockchain/noah-explorer-api/internal/resource"
 	"github.com/noah-blockchain/noah-explorer-api/internal/stake"
 	"github.com/noah-blockchain/noah-explorer-api/internal/tools"
@@ -131,12 +131,12 @@ func getValidatorsWithPagination(c *gin.Context, req GetAggregatedValidatorReque
 	var data []models.Validator
 
 	var field, orderBy *string
-	if req.Filter != nil && h.IsModelsContain(*req.Filter, []string{
+	if req.Filter != nil && apiHelper.IsModelsContain(*req.Filter, []string{
 		"uptime", "total_stake", "commission", "count_delegators"}) {
 		field = req.Filter
 	}
 
-	if req.OrderBy != nil && h.IsModelsContain(*req.OrderBy, []string{"ASC", "DESC"}) {
+	if req.OrderBy != nil && apiHelper.IsModelsContain(*req.OrderBy, []string{"ASC", "DESC"}) {
 		orderBy = req.OrderBy
 	}
 
@@ -191,7 +191,7 @@ func GetAggregatedValidators(c *gin.Context) {
 		}
 
 		if d.TotalStake != nil {
-			resources[i].Stake = pointer.ToString(h.QNoahStr2Noah(zero.StringFromPtr(d.TotalStake).String))
+			resources[i].Stake = pointer.ToString(apiHelper.QNoahStr2Noah(zero.StringFromPtr(d.TotalStake).String))
 		}
 
 		part, _ := validator.GetValidatorPartAndStake(d, totalStakeActiveValidators, activeValidatorIDs)
@@ -208,7 +208,6 @@ func GetAggregatedValidators(c *gin.Context) {
 func GetDelegators(c *gin.Context) {
 	explorer := c.MustGet("explorer").(*core.Explorer)
 
-	// validate request
 	// validate request
 	var request GetValidatorRequest
 	err := c.ShouldBindUri(&request)
